@@ -1,15 +1,15 @@
 import React from 'react';
-import { Image , Button , Form , Row , Col } from 'react-bootstrap';
+import { Button , Form , Row , Col } from 'react-bootstrap';
 import axios from 'axios';
-
+import ColorPacker from './colorpacker.jsx';
 
 export default function SvgPlace( props ) {
 
     const {
         color0 , setColor0 ,
-        color1 , setColor1 ,
-        color2 , setColor2 ,
-        color3 , setColor3 ,
+        // color1 , setColor1 ,
+        // color2 , setColor2 ,
+        // color3 , setColor3 ,
     } = props;
 
 
@@ -17,19 +17,18 @@ export default function SvgPlace( props ) {
         let hex = event.target.value;
         setColor0( hex );
     }
-    async function doSomething( input ) {
+
+
+    async function submitColor( input , stat ) {
+        let clr = stat === 'state' ? color0 : input;
         console.log( input )
         axios( {
-            url : 'http://localhost:3001/colors/' + color0 ,
+            url : 'http://localhost:3001/colors/' + clr ,
             method : 'get' ,
-            // data : {
-            //   foo : 'bar'
-            // }
         } )
         .then( res => {
             console.log( res );
         } )
-        // setColor0( input );
     }
 
 
@@ -43,10 +42,11 @@ export default function SvgPlace( props ) {
                         </Col>
                     </Row>
 
+
                     <Row>
                         <Col>
                             <Button 
-                                onClick={ ( ) => { doSomething( 'b3701a' ) } }
+                                onClick={ ( ) => { submitColor( color0 ) } }
                                 >
                                 Change Color0
                             </Button>
@@ -55,29 +55,40 @@ export default function SvgPlace( props ) {
                 </Col>
             </Row>
 
+
             <Row>
                 <Col>
+
                     <Form>
-  <Form.Group controlId="formBasicColor">
-    <Form.Label>Hex Color : #</Form.Label>
-    <Form.Control 
-    name='hex'
-    value={ color0 }
-    onChange={ handleChange }
-    type="text" placeholder="efef12" />
-    <Form.Text className="text-muted">
-      <br />We'll replace a color in SVG with the one you provide.
-    </Form.Text>
-  </Form.Group>
-
-
+                        <Form.Group controlId="formBasicColor">
+                            <Form.Label>Hex Color : #</Form.Label>
+                            <Form.Control 
+                                name='hex'
+                                value={ color0 }
+                                onChange={ handleChange }
+                                type="text" placeholder="efef12" 
+                                />
+                                <Form.Text className="text-muted">
+                                    <br />We'll replace a color in SVG with the one you provide.
+                                </Form.Text>
+                        </Form.Group>
                     </Form>
+
                 </Col>
             </Row>
 
-            <Row>
-                <Col>
+
+            <Row className='justify-content-md-center'>
+                <Col></Col>
+                <Col className='justify-content-md-center'>
+                    <ColorPacker 
+                        setColor0={ setColor0 }
+                        color0={ color0 }
+                        submitColor={ submitColor }
+                    />
                 </Col>
+                <Col></Col>
+
             </Row>
 
             <Row>
