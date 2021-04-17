@@ -5,18 +5,42 @@ import {
         Container ,
         Row ,
         Col ,
-    } from 'react-bootstrap';
-import PloderBuns from './components/plodybuns.jsx';
-import ShownyBuns from './components/shownybuns.jsx';
-import SvgPlace from './components/svgplace.jsx';
-import axios from 'axios';
+    }                       from 'react-bootstrap';
+import PloderBuns           from './components/plodybuns.jsx';
+import ShownyBuns           from './components/shownybuns.jsx';
+import SvgPlace             from './components/svgplace.jsx';
+import axios                from 'axios';
 
 
 function App( ) {
 
+    const [ colors , setColors ] =      useState( [ ] );
     const [ color0 , setColor0 ] =      useState( '4b79d4' );
     const [ upload0 , setUpload0 ] =    useState( null );
     const [ paths0 , setPaths0 ] =      useState( [ ] );
+
+
+
+    
+    function handleAllColorsChange( c , i ) {
+        let tempCols = [ ...colors ];
+        tempCols[ i ] = c;
+        setColors( tempCols );
+    }
+
+
+
+    async function changeOne( old , nu ) {
+        console.log( old , nu )
+        axios( {
+            url : 'http://localhost:3001/changecolor/' + old + '/' + nu ,
+            method : 'get' ,
+        } )
+        .then( res => {
+            console.log( res );
+        } )
+    }
+
 
     function handleUpload( event ) {
         let files = Object.keys( event.target.files ).map( a => ( event.target.files[ a ] ) );
@@ -64,6 +88,10 @@ function App( ) {
                     svg={ logo }
                     color0={ color0 }
                     setColor0={ setColor0 }
+                    setColors={ setColors }
+                    colors={ colors }
+                    setAllColors={ handleAllColorsChange }
+                    changeOne={ changeOne }
                 />
 
                 <Row style={ { borderTop : '1px solid red' } }>

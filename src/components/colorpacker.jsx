@@ -7,14 +7,15 @@ export default function ColorPacker( props ) {
 
     const { 
         setColor0 , color0 ,
-        submitColor 
+        submitColor , changeOne
     } = props;
     // const [ background , setBackground ] = useState( '#fff' );
 
     function handleChangeComplete( colr ) {
         console.log( colr );
         let clrHax = colr.hex.replace( '#' , '' );
-        submitColor( clrHax )
+        changeOne( color0 , clrHax )
+        // submitColor( clrHax )
         setColor0( clrHax )
     }
 

@@ -1,22 +1,47 @@
-import React from 'react';
+import React , { useEffect } from 'react';
 import { Button , Form , Row , Col } from 'react-bootstrap';
 import axios from 'axios';
 import ColorPacker from './colorpacker.jsx';
+import ColorWidget from './colorwidget.jsx';
+
+
 
 export default function SvgPlace( props ) {
 
     const {
         color0 , setColor0 ,
+        colors , setColors ,
+        setAllColors ,
+        changeOne
         // color1 , setColor1 ,
         // color2 , setColor2 ,
         // color3 , setColor3 ,
     } = props;
 
 
+
+    useEffect( ( ) => {
+        async function getColors( ) {
+            axios( {
+                url : 'http://localhost:3001/firststep/' ,
+                method : 'get'
+            } )
+            .then( res => {
+                console.log( res );
+                setColors( res.data );
+            } )
+        }
+        getColors( )
+    } , [ ] );
+
+
+
     function handleChange( event ) {
         let hex = event.target.value;
         setColor0( hex );
     }
+
+
 
 
     async function submitColor( input , stat ) {
@@ -34,15 +59,13 @@ export default function SvgPlace( props ) {
 
     return (
         <Col>
-            <Row>
+            { /* <Row>
                 <Col>
                     <Row>
                         <Col>
                             { color0 }
                         </Col>
                     </Row>
-
-
                     <Row>
                         <Col>
                             <Button 
@@ -53,12 +76,9 @@ export default function SvgPlace( props ) {
                         </Col>
                     </Row>
                 </Col>
-            </Row>
-
-
-            <Row>
+            </Row> */}
+            {/* <Row>
                 <Col>
-
                     <Form>
                         <Form.Group controlId="formBasicColor">
                             <Form.Label>Hex Color : #</Form.Label>
@@ -73,12 +93,9 @@ export default function SvgPlace( props ) {
                                 </Form.Text>
                         </Form.Group>
                     </Form>
-
                 </Col>
-            </Row>
-
-
-            <Row className='justify-content-md-center'>
+            </Row> */}
+            {/* <Row className='justify-content-md-center'>
                 <Col></Col>
                 <Col className='justify-content-md-center'>
                     <ColorPacker 
@@ -88,16 +105,20 @@ export default function SvgPlace( props ) {
                     />
                 </Col>
                 <Col></Col>
-
-            </Row>
+            </Row> */}
 
             <Row>
                 <Col>
+                { colors.length > 0 
+                ?
+                <Row>
+                    { colors.map( ( a , b ) => ( <ColorWidget myColor={ a } changeOne={ changeOne } /> ) ) }
+                </Row>
+                :
+                <Row></Row>
+                }
                 </Col>
             </Row>
-
         </Col>
-
     )
-
 }
