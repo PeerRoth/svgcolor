@@ -13,6 +13,18 @@ const plateBegin =      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84
 const plateEnding =     `</svg>`;
 
 
+
+
+
+
+const fixedStyle= { 
+    position : 'fixed' ,
+    top: '0' ,
+    right : '0' ,
+}
+
+
+
 function getStyleFromFull( svgCont ) {
     let try0 = /\<style\>(.+?)<\/style\>/;
     var putts = ''
@@ -57,16 +69,22 @@ function getColorsFromPath( path ) {
 
 
 function PoppedOutBitch( props ) {
-    const { imgText , imgInd } = props;
+    const { imgText , imgInd ,
+            genSvgsFixed , setGenSvgsFixed } = props;
         let blob =          new Blob( [ imgText ] , { type : 'image/svg+xml' } );
         let urlSvgPath =    URL.createObjectURL( blob );
-    return <img style={ { 
-        position : 'fixed' ,
-        top : '60px' ,
-        right : '0px' ,
-        opacity : '.5'
-} }  width='300' src={ urlSvgPath } alt={ imgInd + 'caca' } />
+    return <img
+        key={ 'poptoutbish' + imgInd }
+//         style={ genSvgsFixed ? fixedStyle : { } }
+//         style={ { 
+//         // position : 'fixed' ,
+//         // top : '60px' ,
+//         // right : '0px' ,
+//         opacity : '.5'
+// } }  
+width='300' src={ urlSvgPath } alt={ imgInd + 'caca' } />
 }
+
 
 
 export default function App( ) {
@@ -74,8 +92,9 @@ export default function App( ) {
     const [ colors ,    setColors   ] =     useState( [ ] );
     const [ upload ,    setUpload  ] =      useState( null );
     const [ paths ,     setPaths    ] =     useState( [ ] );
+    const [ genSvgsFixed , setGenSvgsFixed ] = useState( true );
 
-    function handleUpload( event ) {
+    function storeUploadInBrowser( event ) {
         let plode =     new FormData( );
         let files =     Object.keys( event.target.files )
                         .map( a => ( event.target.files[ a ] ) );
@@ -97,7 +116,7 @@ export default function App( ) {
     const [ genPaths , setGenPaths ] =                  useState( [ ] );
 
     useEffect( ( ) => {
-        async function bob( ) {
+        async function onceUserUploads( ) {
             const text =        await ( new Response( upload ) ).text( );
             var pathMatches =   [ ...text.toString( ).matchAll( /(<path.+?>)/g ) ].map( a => ( a[ 1 ] ) );
             var pathColors =    pathMatches.map( a => ( getColorsFromPath( a ) ) );
@@ -105,25 +124,34 @@ export default function App( ) {
             var styles = getStyleFromFull( text );
             console.log( styles );
 
-            setColors( pathColors );
-            setPaths( pathMatches );
-            setGenPaths( svgsFromPaths );
+            // UPLOAD IS THE FILE OBJECT
+            setColors( pathColors ); // ARRAY OF COLORS IN ART
+            setPaths( pathMatches ); // ARRAY OF ALL PATHS 
+            setGenPaths( svgsFromPaths ); // ARRAY OF SVG STRINGS
             console.log( text );
             console.log( pathMatches );        
         };
-        bob( );
+        onceUserUploads( );
 
-    } , [ upload ] )
+    } , [ upload ] );
 
 
-
+    function handleGenSvgClick( ) {
+        console.log( genSvgsFixed );
+        setGenSvgsFixed( !genSvgsFixed );
+    }
+    
+    
+    
+    
     return (
+
         <Container>
             <Row>
                 <Col>
                     <Row>
                         <Col>
-                            <PloderBuns handleUpload={ handleUpload } /> 
+                            <PloderBuns handleUpload={ storeUploadInBrowser } /> 
                         </Col>
                     </Row>
                     <Row>
@@ -141,11 +169,19 @@ export default function App( ) {
                             {
                             genPaths.length > 0 
                             ?
-                            <Row>
+                            <Row
+                                onClick={ handleGenSvgClick } >
                                 {
                                 genPaths.map( ( gp , gpi ) => (
-                                    <PoppedOutBitch
-                                        imgText={ gp } imgInd={ gpi } />
+                                    <Col 
+                                    key={ gpi + 'poppedOwtBish' }
+                                    style={ genSvgsFixed ? fixedStyle : { } }>
+                                        <PoppedOutBitch
+                                            style={ genSvgsFixed ? fixedStyle : { } }
+                                            genSvgsFixed={ genSvgsFixed }
+                                            setGenSvgsFixed={ setGenSvgsFixed }
+                                            imgText={ gp } imgInd={ gpi } />
+                                    </Col>
                                 ) )
                                 }
                             </Row>
