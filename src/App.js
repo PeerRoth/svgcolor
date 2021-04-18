@@ -191,14 +191,19 @@ export default function App( ) {
                         </Col>
                     </Row>
 
+{
+[
+    colors ,
+    paths ,
+].map( rodstewart => (
                     <Row>
                         <Col>
-                            { paths.length > 0
+                            { rodstewart.length > 0
                             ? 
                             <Row className='justify-content-md-center'>
                                 <Col
                                 xs={ 10 }>
-                                    { paths.map( ( path , ind ) => (
+                                    { rodstewart.map( ( path , ind ) => (
                                     <Row key={ ind + 'RowPath' } >
                                         <Col
                                             style={ { 
@@ -220,6 +225,8 @@ export default function App( ) {
                             <></> }
                         </Col>
                     </Row>
+) ) }
+
                 </Col>
             </Row>
         </Container>
