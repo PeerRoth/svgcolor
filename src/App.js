@@ -81,16 +81,16 @@ export default function App( ) {
                         .map( a => ( event.target.files[ a ] ) );
         plode.append(   'file' ,     event.target.files[ 0 ] );
         setUpload(      files[ 0 ] );
-        axios(          {
-            url :       'http://localhost:3001/upload/' ,
-            method :    'post' ,
-            data :      plode
-        } )
-        .then( res => {
-            console.log(    res );
-            let pats =      res.data.paths;
-            // setPaths(       pats );
-        } );
+        // axios(          {
+        //     url :       'http://localhost:3001/upload/' ,
+        //     method :    'post' ,
+        //     data :      plode
+        // } )
+        // .then( res => {
+        //     console.log(    res );
+        //     let pats =      res.data.paths;
+        //     // setPaths(       pats );
+        // } );
     }
 
     const [ generatedSvg , setGeneratedSvg ] =          useState( );
