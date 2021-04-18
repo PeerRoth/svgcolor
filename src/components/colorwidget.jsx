@@ -4,7 +4,7 @@ import ColorPacker from './colorpacker.jsx';
 
 export default function ColorWidget( props ) {
 
-    const { myColor , changeOne } = props;
+    const { myColor , changeOne , indix } = props;
 
     const [ local , setLocal ] = useState( myColor );
 
@@ -14,40 +14,39 @@ export default function ColorWidget( props ) {
     }
 
 
-    // async function submitColor( input , stat ) {
-    //     let clr = stat === 'state' ? color0 : input;
-    //     console.log( input )
-    //     axios( {
-    //         url : 'http://localhost:3001/colors/' + clr ,
-    //         method : 'get' ,
-    //     } )
-    //     .then( res => {
-    //         console.log( res );
-    //     } )
-    // }
-
 
     return (
-        <Col>
+        <Col
+            style={ { 
+                borderBottom : '1px solid gray' 
+            } } >
             <Row>
                 <Col>
 
                     <Row>
-                        <Col>
+                        <Col
+                            xs={ 1 }
+                            style={ { 
+                                fontWeight : 500
+                            } } >
+                            { indix } 
+                        </Col>
+                        <Col
+                            xs={ 2 }>
                             { local }
                         </Col>
                     </Row>
 
 
-                    <Row>
+                    {/* <Row>
                         <Col>
                             <Button 
                                 // onClick={ ( ) => { submitColor( color0 ) } }
                                 >
-                                Change Color0
+                                Change Color
                             </Button>
                         </Col>
-                    </Row>
+                    </Row> */}
                 </Col>
             </Row>
 
@@ -56,10 +55,10 @@ export default function ColorWidget( props ) {
                 <Col></Col>
                 <Col className='justify-content-md-center'>
                     <ColorPacker 
+                        indix={ indix }
                         setColor0={ setLocal }
                         color0={ local }
                         changeOne={ changeOne }
-                        // submitColor={ submitColor }
                     />
                 </Col>
                 <Col></Col>

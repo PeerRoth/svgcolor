@@ -3,26 +3,41 @@
 }
 
 .App-logo {
-    height: 50vmin;
+    height: 40vmin;
     pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+/* @media (prefers-reduced-motion: no-preference) {
     .App-logo {
         animation: App-logo-spin infinite 20s linear;
     }
-}
+} */
 
 .App-header {
     background-color: #3e4b66;
-    min-height: 60vh;
-    display: flex;
-    flex-direction: column;
+    /* min-height: 65vh; */
+    /* width : 60vw; */
+    /* margin-left : 40vw; */
+    /* display: flex;
+    flex-direction: column; */
     align-items: center;
     justify-content: center;
     font-size: calc( 10px + 2vmin );
     color: white;
 }
+
+/* .ScideBer {
+    background-color: white;
+    min-height: 65vh;
+    width : 40vw;
+    margin-left : 0vw;
+    position : fixed;
+    top : 0px;
+    align-items: center;
+    justify-content: center;
+    font-size: .95rem;
+    color: black;
+} */
 
 .App-link {
     color: #61dafb;
