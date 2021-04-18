@@ -1,136 +1,191 @@
 import React , { useEffect , useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { 
         Container ,
         Row ,
         Col ,
-        Button
-    }                       from 'react-bootstrap';
-import PloderBuns           from './components/plodybuns.jsx';
-import ShownyBuns           from './components/shownybuns.jsx';
-// import SvgPlace             from './components/svgplace.jsx';
-import axios                from 'axios';
+        Image ,
+        Button }        from 'react-bootstrap';
+import PloderBuns       from './components/plodybuns.jsx';
+import axios            from 'axios';
+
+const plateBegin =      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.9 595.3">`;
+const plateEnding =     `</svg>`;
 
 
-let svg = `<svg  id="Capa_1"  enable-background="new 0 0 512 512" 
-height="512" viewBox="0 0 512 512" width="512"
-xmlns="http://www.w3.org/2000/svg"
-><path d="m378.266 356.863h-244.532c-5.477 0-10.715-1.012-15.549-2.845l16.316 102.189c4.442 27.822 28.441 48.292 56.614 48.292h129.769c28.174 0 52.172-20.471 56.614-48.292l16.316-102.189c-4.833 1.833-10.071 2.845-15.548 2.845z" fill="#ffd600"/>
-    <path d="m378.266 230.341h-244.532c-24.233 0-43.877 19.645-43.877 43.877v38.768c0 24.233 19.645 43.877 43.877 43.877h244.531c24.233 0 43.877-19.645 43.877-43.877v-38.768c.001-24.233-19.643-43.877-43.876-43.877z" fill="#ffff6f"/>
-    <circle cx="311.632" cy="284.235" fill="#f90" r="11.804"/>
-    <circle cx="200.368" cy="284.235" r="11.804"/></svg>`;
+function getStyleFromFull( svgCont ) {
+    let try0 = /\<style\>(.+?)<\/style\>/;
+    var putts = ''
+    if ( try0.test( svgCont ) ) {
+        putts = svgCont.match( try0 )[ 1 ];
+        console.log( 'try0' );
+    // } else if ( try1.test( svgCont ) ) {
+    //     putts = svgCont.match( try1 )[ 0 ];
+    } else {
+        console.log( 'dung putts' );
+    }
+    console.log( putts );
+    return putts;
+};
+
+function getClassnameFromPath( path ) {
+    let try1 = /class\=/
+    var ans = '';
+    if ( try1.test( path ) ) {
+        ans = path.match( try1 )[ 0 ];
+    }
+    console.log( ans );
+    return ans
+}
+function getColorsFromPath( path ) {
+    let try0 = /fill\=\"#([A-Za-z0-9]{4,8})\"/;
+    let try1 = /fill\:\#([0-9A-Za-z]{1,8})/;
+    let try2 = /\<style\>(.+?)\<\/style\>/
+    var answer = '#ffffff';
+    if ( try0.test( path ) ) {
+        answer = path.match( try0 )[ 1 ];
+        console.log( answer );
+    } else if ( try1.test( path ) ) {
+        answer = path.match( try1 )[ 1 ];
+        console.log( answer );
+    } else {
+        console.log( answer );
+    }
+    return answer;
+}
 
 
-function App( ) {
+
+function PoppedOutBitch( props ) {
+    const { imgText , imgInd } = props;
+        let blob =          new Blob( [ imgText ] , { type : 'image/svg+xml' } );
+        let urlSvgPath =    URL.createObjectURL( blob );
+    return <img style={ { 
+        position : 'fixed' ,
+        top : '60px' ,
+        right : '0px' ,
+        opacity : '.5'
+} }  width='300' src={ urlSvgPath } alt={ imgInd + 'caca' } />
+}
+
+
+export default function App( ) {
 
     const [ colors ,    setColors   ] =     useState( [ ] );
-    const [ upload ,   setUpload  ] =       useState( null );
+    const [ upload ,    setUpload  ] =      useState( null );
     const [ paths ,     setPaths    ] =     useState( [ ] );
-    const [ svgString , setSvgString ] =    useState( svg );
-
-    // useEffect( ( ) => {
-    //     function modifySvg( ) {
-    //         let blob =      new Blob( [ svgString ] , { type : 'image/svg+xml' } );
-    //         let url =       URL.createObjectURL( blob );
-    //         let image =     window.document.getElementById( '#ppstring' );
-    //         console.log(    image );
-    //         image.src =     url;
-
-    //         image.addEventListener( 'load' , ( ) => URL.revokeObjectURL( url ) , { once : true } );
-    //     };
-
-    //     modifySvg( );
-    // } , [ ] )
-
-
-    function handleAllColorsChange( c , i ) {
-        let tempCols =      [ ...colors ];
-        tempCols[ i ] =     c;
-        setColors( tempCols );
-    }
-
-    async function changeOne( old , nu ) {
-        console.log( old , nu );
-        axios( {
-            url : 'http://localhost:3001/changecolor/' + old + '/' + nu ,
-            method : 'get' ,
-        } )
-        .then( res => {
-            console.log( res );
-        } )
-    }
-
 
     function handleUpload( event ) {
-        let files = Object.keys( event.target.files ).map( a => ( event.target.files[ a ] ) );
-        setUpload( files[ 0 ] );
         let plode =     new FormData( );
-        plode.append( 'file' , event.target.files[ 0 ] );
-
-        axios( {
-            url : 'http://localhost:3001/upload/' ,
-            method : 'post' ,
-            data : plode
+        let files =     Object.keys( event.target.files )
+                        .map( a => ( event.target.files[ a ] ) );
+        plode.append(   'file' ,     event.target.files[ 0 ] );
+        setUpload(      files[ 0 ] );
+        axios(          {
+            url :       'http://localhost:3001/upload/' ,
+            method :    'post' ,
+            data :      plode
         } )
         .then( res => {
-            console.log( res );
-            let pats = res.data.paths;
-            setPaths( pats );
+            console.log(    res );
+            let pats =      res.data.paths;
+            // setPaths(       pats );
         } );
     }
 
+    const [ generatedSvg , setGeneratedSvg ] =          useState( );
+    const [ genPaths , setGenPaths ] =                  useState( [ ] );
 
-    function deletePath( pthInd ) {
-        axios( {
-            url : 'http://localhost:3001/deletepath/' + pthInd ,
-            method : 'get' ,
-        } )
-        .then( res => { console.log( res ) } )
-    }
+    useEffect( ( ) => {
+        async function bob( ) {
+            const text =        await ( new Response( upload ) ).text( );
+            var pathMatches =   [ ...text.toString( ).matchAll( /(<path.+?>)/g ) ].map( a => ( a[ 1 ] ) );
+            var pathColors =    pathMatches.map( a => ( getColorsFromPath( a ) ) );
+            var svgsFromPaths = pathMatches.map( y => ( plateBegin + y + plateEnding ) );
+            var styles = getStyleFromFull( text );
+            console.log( styles );
+
+            setColors( pathColors );
+            setPaths( pathMatches );
+            setGenPaths( svgsFromPaths );
+            console.log( text );
+            console.log( pathMatches );        
+        };
+        bob( );
+
+    } , [ upload ] )
+
+
 
     return (
         <Container>
             <Row>
-                <Col md={ 5 } >
-                    {/* <SvgPlace
-                        svg={ logo }
-                        setColors={ setColors }
-                        colors={ colors }
-                        setAllColors={ handleAllColorsChange }
-                        changeOne={ changeOne }
-                    /> */}
-                </Col>
-
-                { upload ?
-                <Row>
-                    <Col>
-                        <Row>
-                            <Col>
-                            
-                            </Col>
-                        </Row>
-
-                        <Row>
-                            <Col>
-                                <ShownyBuns paths={ paths } imageGiven={ upload } /> 
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row> :
-                <Row>
                 <Col>
-                    <PloderBuns handleUpload={ handleUpload } /> 
+                    <Row>
+                        <Col>
+                            <PloderBuns handleUpload={ handleUpload } /> 
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            { upload && <Image width='200' src={ window.URL.createObjectURL( upload ) } alt='upload' /> }
+                        </Col>
+                    </Row>
                 </Col>
-                </Row> }
+            </Row>
 
+            <Row>
+                <Col>
+                    <Row>
+                        <Col>
+                            {
+                            genPaths.length > 0 
+                            ?
+                            <Row>
+                                {
+                                genPaths.map( ( gp , gpi ) => (
+                                    <PoppedOutBitch
+                                        imgText={ gp } imgInd={ gpi } />
+                                ) )
+                                }
+                            </Row>
+                            :
+                            <></>
+                            }
+                        </Col>
+                    </Row>
 
-
-
-        </Row>
-
+                    <Row>
+                        <Col>
+                            { paths.length > 0
+                            ? 
+                            <Row className='justify-content-md-center'>
+                                <Col
+                                xs={ 10 }>
+                                    { paths.map( ( path , ind ) => (
+                                    <Row key={ ind + 'RowPath' } >
+                                        <Col
+                                            style={ { 
+                                                fontSize : '.8rem' , 
+                                                marginBottom : '.9rem'
+                                            } }
+                                            >
+                                            <Button
+                                                // onClick={ ( ) => { deletePath( ind ) } }
+                                                >
+                                                { path }
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                    ) ) }
+                                </Col>
+                            </Row>
+                            :
+                            <></> }
+                        </Col>
+                    </Row>
+                </Col>
+            </Row>
         </Container>
     );
 }
-
-export default App;
