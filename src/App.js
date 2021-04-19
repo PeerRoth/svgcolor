@@ -7,7 +7,7 @@ import {
         Image ,
         Button }        from 'react-bootstrap';
 import PloderBuns       from './components/plodybuns.jsx';
-import axios            from 'axios';
+// import axios            from 'axios';
 
 const plateBegin =      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.9 595.3">`;
 const plateEnding =     `</svg>`;
@@ -26,33 +26,31 @@ const fixedStyle= {
 
 
 function getStyleFromFull( svgCont ) {
-    let try0 = /\<style\>(.+?)<\/style\>/;
-    var putts = ''
+    let try0 = /<style>(.+?)<\/style>/;
     if ( try0.test( svgCont ) ) {
-        putts = svgCont.match( try0 )[ 1 ];
         console.log( 'try0' );
-    // } else if ( try1.test( svgCont ) ) {
-    //     putts = svgCont.match( try1 )[ 0 ];
+        return svgCont.match( try0 )[ 1 ];
     } else {
         console.log( 'dung putts' );
+        return false;
     }
-    console.log( putts );
-    return putts;
 };
 
 function getClassnameFromPath( path ) {
-    let try1 = /class\=/
+    let try1 = /class=/
     var ans = '';
     if ( try1.test( path ) ) {
         ans = path.match( try1 )[ 0 ];
     }
     console.log( ans );
     return ans
-}
+};
+
+
 function getColorsFromPath( path ) {
-    let try0 = /fill\=\"#([A-Za-z0-9]{4,8})\"/;
-    let try1 = /fill\:\#([0-9A-Za-z]{1,8})/;
-    let try2 = /\<style\>(.+?)\<\/style\>/
+    let try0 = /fill="#([A-Za-z0-9]{4,8})"/;
+    let try1 = /fill:#([0-9A-Za-z]{1,8})/;
+    // let try2 = /<style\(.+?)<\/style>/
     var answer = '#ffffff';
     if ( try0.test( path ) ) {
         answer = path.match( try0 )[ 1 ];
@@ -69,20 +67,13 @@ function getColorsFromPath( path ) {
 
 
 function PoppedOutBitch( props ) {
-    const { imgText , imgInd ,
-            genSvgsFixed , setGenSvgsFixed } = props;
+    const { imgText , imgInd } = props;
         let blob =          new Blob( [ imgText ] , { type : 'image/svg+xml' } );
         let urlSvgPath =    URL.createObjectURL( blob );
     return <img
-        key={ 'poptoutbish' + imgInd }
-//         style={ genSvgsFixed ? fixedStyle : { } }
-//         style={ { 
-//         // position : 'fixed' ,
-//         // top : '60px' ,
-//         // right : '0px' ,
-//         opacity : '.5'
-// } }  
-width='300' src={ urlSvgPath } alt={ imgInd + 'caca' } />
+                key={ 'poptoutbish' + imgInd }
+                width='300' src={ urlSvgPath } alt={ imgInd + 'caca' } 
+            />
 }
 
 
@@ -112,26 +103,73 @@ export default function App( ) {
         // } );
     }
 
-    const [ generatedSvg , setGeneratedSvg ] =          useState( );
-    const [ genPaths , setGenPaths ] =                  useState( [ ] );
-
+    const [ generatedSvg , setGeneratedSvg ] =  useState( );
+    const [ genPaths , setGenPaths ] =          useState( [ ] );
+    const [ style , setStyle ] =                useState( [ ] );
+    const [ parsedStyle , setParsedStyle ] = useState( [ ] )
+    const [ pStyle , setPStyle ] = useState( );
     useEffect( ( ) => {
         async function onceUserUploads( ) {
             const text =        await ( new Response( upload ) ).text( );
-            var pathMatches =   [ ...text.toString( ).matchAll( /(<path.+?>)/g ) ].map( a => ( a[ 1 ] ) );
-            var pathColors =    pathMatches.map( a => ( getColorsFromPath( a ) ) );
-            var svgsFromPaths = pathMatches.map( y => ( plateBegin + y + plateEnding ) );
-            var styles = getStyleFromFull( text );
+            console.log( text );
+
+            var pathMatches =   [ ...text.toString( ).matchAll( /(<path.+?>)/g ) ]
+                                    .map( a => {
+                                        let retObj = { text : '' , className : '' }
+                                        if ( /class=/.test( a[ 1 ] ) ) { retObj.className = a[ 1 ].match( /class="(.+?)"/ )[ 1 ]; }
+                                        retObj.text = a[ 1 ];
+                                        return retObj;
+                                    } );
+            
+            var pathColors =    pathMatches
+                                    .map( a => ( getColorsFromPath( a ) ) );
+
+            var styles =        getStyleFromFull( text )
+                                ? getStyleFromFull( text ).split( '.' )
+                                    .filter( f => ( /[0-9A-Za-z]/.test( f ) ) )
+                                : [ 'null' , 'null' , 'null' ];
             console.log( styles );
 
+            let parsedStyles = styles.map( m => {
+                let psArray = m.split( '{' );
+                return { [ psArray[ 0 ] ] : psArray[ 1 ] } 
+            } );
+            var psObject = { };
+            styles.forEach( p => {
+                let q = p.split( '{' );
+                psObject[ q[ 0 ] ] = q[ 1 ] 
+            } );
+            console.log( psObject )
+            
+            if ( parsedStyles.length > 0 ) {
+                pathMatches.forEach( ( p , q ) => {
+                    if ( p.className !== '' ) {
+                        let psq = psObject[ p.className ].match( /fill:(.+?)\}/ )[ 1 ];
+                        console.log( p.className )
+                        console.log( psq )
+                        console.log( 'shaway' );
+                        pathMatches[ q ][ 'fill' ] = psq;
+                    }
+                } )
+            }
+
+            var svgsFromPaths = pathMatches
+                                    .map( y => {
+                                        return ( plateBegin + y.text.replace( 
+                                                /path\s/ , 
+                                                'path fill="' + y.fill + '" ' )
+                                            + plateEnding ) } );
+
             // UPLOAD IS THE FILE OBJECT
+            setStyle( styles );
+            setPStyle( psObject );
+            setParsedStyle( parsedStyles )
             setColors( pathColors ); // ARRAY OF COLORS IN ART
             setPaths( pathMatches ); // ARRAY OF ALL PATHS 
             setGenPaths( svgsFromPaths ); // ARRAY OF SVG STRINGS
-            console.log( text );
             console.log( pathMatches );        
         };
-        onceUserUploads( );
+        if ( upload ) onceUserUploads( );
 
     } , [ upload ] );
 
@@ -174,8 +212,9 @@ export default function App( ) {
                                 {
                                 genPaths.map( ( gp , gpi ) => (
                                     <Col 
-                                    key={ gpi + 'poppedOwtBish' }
-                                    style={ genSvgsFixed ? fixedStyle : { } }>
+                                        key={ gpi + 'poppedOwtBish' }
+                                        style={ genSvgsFixed ? fixedStyle : { } }
+                                        >
                                         <PoppedOutBitch
                                             style={ genSvgsFixed ? fixedStyle : { } }
                                             genSvgsFixed={ genSvgsFixed }
@@ -191,12 +230,13 @@ export default function App( ) {
                         </Col>
                     </Row>
 
-{
-[
-    colors ,
-    paths ,
-].map( rodstewart => (
-                    <Row>
+                {
+                [
+                    style ,
+                    colors ,
+                    paths ,
+                ].map( ( rodstewart , pod ) => (
+                    <Row key={ pod + 'RowPath' } >
                         <Col>
                             { rodstewart.length > 0
                             ? 
@@ -204,7 +244,7 @@ export default function App( ) {
                                 <Col
                                 xs={ 10 }>
                                     { rodstewart.map( ( path , ind ) => (
-                                    <Row key={ ind + 'RowPath' } >
+                                    <Row key={ ind + 'soobraw' }>
                                         <Col
                                             style={ { 
                                                 fontSize : '.8rem' , 
@@ -214,7 +254,7 @@ export default function App( ) {
                                             <Button
                                                 // onClick={ ( ) => { deletePath( ind ) } }
                                                 >
-                                                { path }
+                                                { typeof path === 'string' ? path : path.text }
                                             </Button>
                                         </Col>
                                     </Row>
