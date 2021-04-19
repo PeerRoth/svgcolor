@@ -17,7 +17,7 @@ export default function PloderBuns( props ) {
                         name='file'
                         onChange={ handleUpload }
                         id="exampleFormControlFile1" 
-                        label="Upload AI , PDF , or SVG" 
+                        label="Select an SVG from your device. " 
                     />
                 </Form.Group>
             </Form>

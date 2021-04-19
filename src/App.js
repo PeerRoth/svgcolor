@@ -17,10 +17,12 @@ const plateEnding =     `</svg>`;
 
 
 
-const fixedStyle= { 
-    position : 'fixed' ,
-    top: '0' ,
+var initFixedStyle= { 
+    position : 'absolute' ,
+    top: '30' ,
     right : '0' ,
+    width : '300px' ,
+    height : '200px'
 }
 
 
@@ -80,10 +82,10 @@ function PoppedOutBitch( props ) {
 
 export default function App( ) {
 
-    const [ colors ,    setColors   ] =     useState( [ ] );
-    const [ upload ,    setUpload  ] =      useState( null );
-    const [ paths ,     setPaths    ] =     useState( [ ] );
-    const [ genSvgsFixed , setGenSvgsFixed ] = useState( true );
+    const [ colors ,        setColors   ] =     useState( [ ] );
+    const [ upload ,        setUpload  ] =      useState( null );
+    const [ paths ,         setPaths    ] =     useState( [ ] );
+    const [ genSvgsFixed ,  setGenSvgsFixed ] = useState( true );
 
     function storeUploadInBrowser( event ) {
         let plode =     new FormData( );
@@ -91,23 +93,16 @@ export default function App( ) {
                         .map( a => ( event.target.files[ a ] ) );
         plode.append(   'file' ,     event.target.files[ 0 ] );
         setUpload(      files[ 0 ] );
-        // axios(          {
-        //     url :       'http://localhost:3001/upload/' ,
-        //     method :    'post' ,
-        //     data :      plode
-        // } )
-        // .then( res => {
-        //     console.log(    res );
-        //     let pats =      res.data.paths;
-        //     // setPaths(       pats );
-        // } );
     }
 
-    const [ generatedSvg , setGeneratedSvg ] =  useState( );
-    const [ genPaths , setGenPaths ] =          useState( [ ] );
-    const [ style , setStyle ] =                useState( [ ] );
-    const [ parsedStyle , setParsedStyle ] = useState( [ ] )
-    const [ pStyle , setPStyle ] = useState( );
+    const [ generatedSvg ,  setGeneratedSvg ] =     useState( );
+    const [ genPaths ,      setGenPaths ] =         useState( [ ] );
+    const [ style ,         setStyle ] =            useState( [ ] );
+    const [ parsedStyle ,   setParsedStyle ] =      useState( [ ] )
+    const [ pStyle ,        setPStyle ] =           useState( );
+    const [ fixedStyle , setFixedStyle ] = useState( initFixedStyle );
+    const [ svgString , setSvgString ] = useState( '' );
+
     useEffect( ( ) => {
         async function onceUserUploads( ) {
             const text =        await ( new Response( upload ) ).text( );
@@ -134,6 +129,7 @@ export default function App( ) {
                 let psArray = m.split( '{' );
                 return { [ psArray[ 0 ] ] : psArray[ 1 ] } 
             } );
+
             var psObject = { };
             styles.forEach( p => {
                 let q = p.split( '{' );
@@ -153,14 +149,14 @@ export default function App( ) {
                 } )
             }
 
-            var svgsFromPaths = pathMatches
-                                    .map( y => {
-                                        return ( plateBegin + y.text.replace( 
-                                                /path\s/ , 
-                                                'path fill="' + y.fill + '" ' )
-                                            + plateEnding ) } );
+            var svgsFromPaths = pathMatches.map( y => {
+                                    return ( plateBegin + y.text.replace( 
+                                            /path\s/ , 
+                                            'path fill="' + y.fill + '" ' )
+                                        + plateEnding ) } );
 
             // UPLOAD IS THE FILE OBJECT
+            setSvgString( text );
             setStyle( styles );
             setPStyle( psObject );
             setParsedStyle( parsedStyles )
@@ -180,7 +176,11 @@ export default function App( ) {
     }
     
     
-    
+    function format( strin , typ ) {
+        let newStrin = strin
+                        .replace( /</g , '\n\n<' );
+        return newStrin;
+    }
     
     return (
 
@@ -192,9 +192,19 @@ export default function App( ) {
                             <PloderBuns handleUpload={ storeUploadInBrowser } /> 
                         </Col>
                     </Row>
+
                     <Row>
-                        <Col>
-                            { upload && <Image width='200' src={ window.URL.createObjectURL( upload ) } alt='upload' /> }
+                        <Col style={ { 
+                            border : '1px solid gray' ,
+                            borderRadius : '.5rem' } }
+                            >
+                            { 
+                            upload && 
+                            <Image width='300' 
+                                src={ window.URL.createObjectURL( upload ) } 
+                                alt='upload' 
+                            /> 
+                            }
                         </Col>
                     </Row>
                 </Col>
@@ -207,22 +217,22 @@ export default function App( ) {
                             {
                             genPaths.length > 0 
                             ?
-                            <Row
-                                onClick={ handleGenSvgClick } >
-                                {
-                                genPaths.map( ( gp , gpi ) => (
-                                    <Col 
+                            <Row onClick={ handleGenSvgClick } >
+                                { genPaths.map( ( gp , gpi ) => (
+                                    <Col
+                                        className='bordered' 
                                         key={ gpi + 'poppedOwtBish' }
-                                        style={ genSvgsFixed ? fixedStyle : { } }
-                                        >
+                                        style={ genSvgsFixed 
+                                            ? fixedStyle : { width : '300px' , fontWeight : '500' , color : 'red' }
+                                        } >
+                                        { gpi }
                                         <PoppedOutBitch
-                                            style={ genSvgsFixed ? fixedStyle : { } }
                                             genSvgsFixed={ genSvgsFixed }
                                             setGenSvgsFixed={ setGenSvgsFixed }
                                             imgText={ gp } imgInd={ gpi } />
                                     </Col>
-                                ) )
-                                }
+                                ) ) }
+                            
                             </Row>
                             :
                             <></>
@@ -232,18 +242,23 @@ export default function App( ) {
 
                 {
                 [
-                    style ,
-                    colors ,
-                    paths ,
+                    [ style , 'Style' ] ,
+                    [ colors , 'Colors' ] ,
+                    [ paths , 'Paths' ]
                 ].map( ( rodstewart , pod ) => (
                     <Row key={ pod + 'RowPath' } >
                         <Col>
-                            { rodstewart.length > 0
+                            { rodstewart[ 0 ].length > 0
                             ? 
                             <Row className='justify-content-md-center'>
                                 <Col
                                 xs={ 10 }>
-                                    { rodstewart.map( ( path , ind ) => (
+                                    <Row>
+                                        <Col style={ { fontWeight : '600' } }>
+                                            { rodstewart[ 1 ] }
+                                        </Col>
+                                    </Row>
+                                    { rodstewart[ 0 ].map( ( path , ind ) => (
                                     <Row key={ ind + 'soobraw' }>
                                         <Col
                                             style={ { 
@@ -254,7 +269,9 @@ export default function App( ) {
                                             <Button
                                                 // onClick={ ( ) => { deletePath( ind ) } }
                                                 >
-                                                { typeof path === 'string' ? path : path.text }
+                                                { typeof path === 'string' 
+                                                ? 'len: ' + path.length + '\n'+ path.slice( 0 , 80 ) 
+                                                : 'len: ' + path.text.length + '\n'+ path.text.slice( 0 , 80 ) }
                                             </Button>
                                         </Col>
                                     </Row>
@@ -265,7 +282,18 @@ export default function App( ) {
                             <></> }
                         </Col>
                     </Row>
-) ) }
+                ) ) }
+
+                <Row>
+                    <Col>
+                        { svgString.length > 0 
+                        ? <pre className='coderBabe'>
+                            <code>
+                                { format( svgString , 'svg' ) }
+                            </code>
+                        </pre> : <></> }
+                    </Col>
+                </Row>
 
                 </Col>
             </Row>
