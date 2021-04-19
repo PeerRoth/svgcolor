@@ -1,4 +1,73 @@
-.App {
+@font-face {
+    font-family: "BebasNeue-Regular";
+    src: local("BebasNeue-Regular"),
+      url("./fonts/BebasNeue-Regular.ttf") format("truetype");
+    font-weight: normal;
+  }
+
+  @font-face {
+    font-family: "TH3 MACHINE";
+    src: local("TH3 MACHINE"),
+      url("./fonts/TH3 MACHINE.ttf") format("truetype");
+    font-weight: normal;
+  }
+
+  /* TH3 MACHINE.ttf */
+  
+.landing {
+    font-family : "TH3 MACHINE" , "BebasNeue-Regular";
+    color:white;
+    font-size:6rem;
+    position:fixed;
+    left:10vw;
+    opacity:0;
+}
+
+.landingtoo {
+    font-family : "TH3 MACHINE" , "BebasNeue-Regular";
+    color:white;
+    font-size:7rem;
+    position:fixed;
+    left:10vw;
+
+}
+.landing {
+    animation-duration:8s;
+    animation-name:dispear;
+}
+
+.landingtoo {
+    animation-duration: 8s;
+    animation-name: slidein;
+}
+
+@keyframes dispear {
+    from {
+        opacity : 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+@keyframes slidein {
+    from {
+      /* margin-left: 100%; */
+      left:100vw;
+      width: 100%;
+    }
+  
+    to {
+      /* margin-left: 10%; */
+      left:10vw;
+      /* margin-left:10vw; */
+      width: 100%;
+    }
+  }
+
+
+
+
+  .App {
     text-align: center;
 }
 
@@ -13,6 +82,48 @@
     }
 } */
 
+.visually-hidden {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    }
+    
+
+/* Separate rule for compatibility, :focus-within is required on modern Firefox and Chrome */
+input.visually-hidden:focus + label {
+    outline: thin dotted;
+    }
+input.visually-hidden:focus-within + label {
+    outline: thin dotted;
+    }
+    
+.svgcloud {
+    position : fixed;
+    top : 20vh;
+    left : 40vh;
+    fill: #5310fe!important;
+    opacity : .5;
+    filter : blur( 2px );
+    border-color: #e4e6e2!important;
+    line-height: 4.5rem;
+    stroke : none;
+    stroke-width: 3px;
+    height : 40vh;
+    width : 50vh;
+    transition: all .7s cubic-bezier(.1,0,.33,1.25) 0ms;
+    cursor: url("./circ.svg"), auto;
+    }
+.svgcloud:hover {
+    cursor: url("./circ.svg"), auto;
+    filter: blur( .5px );
+    height : 50vh;
+    fill: #5310fe!important;
+    opacity : .8;
+    margin-top : 3px;
+    }
+    
 .bordered {
     border : 1px solid gray;
     border-radius : .5rem;

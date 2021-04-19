@@ -8,6 +8,12 @@ import {
         Button }        from 'react-bootstrap';
 import PloderBuns       from './components/plodybuns.jsx';
 import ColorPacker      from './components/colorpacker.jsx';
+import PlodingRear      from './components/plodingrear.jsx';
+
+
+
+
+
 // import axios            from 'axios';
 const plateBegin =      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.9 595.3">`;
 const plateEnding =     `</svg>`;
@@ -195,28 +201,32 @@ export default function App( ) {
     
     return (
 
-        <Container>
+        <Container
+            style={ { minHeight : '100vh' , backgroundColor : !upload ? 'black' : 'white' } } >
             <Row>
                 <Col>
                     <Row>
                         <Col>
-                            <PloderBuns handleUpload={ storeUploadInBrowser } /> 
+                            { !upload &&
+                            <PlodingRear 
+                                handleUpload={ storeUploadInBrowser } 
+                            /> }
                         </Col>
                     </Row>
 
                     <Row>
-                        <Col style={ { 
-                            border : '1px solid gray' ,
-                            borderRadius : '.5rem' } }
-                            >
                             { 
                             upload && 
-                            <Image width='300' 
-                                src={ window.URL.createObjectURL( upload ) } 
-                                alt='upload' 
-                            /> 
+                            <Col style={ { 
+                                border : '1px solid gray' ,
+                                borderRadius : '.5rem' } }
+                                >
+                                <Image width='300' 
+                                    src={ window.URL.createObjectURL( upload ) } 
+                                    alt='upload' 
+                                    /> 
+                            </Col>
                             }
-                        </Col>
                     </Row>
                 </Col>
             </Row>
@@ -271,16 +281,17 @@ export default function App( ) {
                         >
                         <Col style={ { 
                                 fontSize : '.8rem' , 
-                                marginBottom : '.9rem'
+                                marginBottom : '.9rem' ,
                             } } 
                             >
                             <h3 style={ { 
                                 width : '240px' , 
                                 border : '2px solid gray' ,
-                                borderRadius : '.7rem'
+                                borderRadius : '.7rem' ,
+                                padding : '.6rem'
                                 } } >
 
-                                { '((' + ind + '))' }
+                                { '((' + ind + '))  ' }
 
                                 { typeof c[ 'fill' ] !== 'undefined' 
                                     ? ' ' + c.fill 
