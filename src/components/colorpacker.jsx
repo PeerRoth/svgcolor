@@ -4,10 +4,17 @@ import {
     CirclePicker ,
     SwatchesPicker
  } from 'react-color'
+import MyPick from './mypick.jsx';
+
+
+
+
+
 
 export default function ColorPacker( props ) {
 
-    const { indy , setColor0 , color0 , changeOne , handleColorPick } = props;
+
+    const { indy , colors , setColor0 , color0 , changeOne , handleColorPick } = props;
 
     const [ colorLocal , setColorLocal ] = useState( color0 );
 
@@ -21,20 +28,23 @@ export default function ColorPacker( props ) {
     }
     
     return ( <>
+
                 <h5>
                     CirclePicker
                 </h5>
                 <CirclePicker 
+                    colors={ colors }
+                // circleSize={ 5 }
                     onChangeComplete={ handleChangeComplete }
                     color={ colorLocal } 
                     />
-                <h5>
+                {/* <h5>
                 BlockPicker
                 </h5>
                 <BlockPicker 
                     onChangeComplete={ handleChangeComplete } 
                     color={ colorLocal }
-                    />
+                    /> */}
                 <h5>
                 SwatchesPicker
                 </h5>
@@ -42,5 +52,10 @@ export default function ColorPacker( props ) {
                     color={ colorLocal } 
                     onChangeComplete={ handleChangeComplete } 
                 />
+
+
+
+
+
             </> )
 }

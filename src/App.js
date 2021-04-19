@@ -9,7 +9,7 @@ import {
 import PloderBuns       from './components/plodybuns.jsx';
 import ColorPacker      from './components/colorpacker.jsx';
 import PlodingRear      from './components/plodingrear.jsx';
-
+import { execute }      from 'wasm-imagemagick';
 
 
 
@@ -27,8 +27,8 @@ var initFixedStyle= {
     position : 'absolute' ,
     top: '30' ,
     right : '0' ,
-    width : '300px' ,
-    height : '200px'
+    width : '100px' ,
+    height : '50px'
 }
 
 
@@ -47,7 +47,7 @@ function getStyleFromFull( svgCont ) {
 
 function getColorsFromPath( path ) {
     let try0 = /fill="#([A-Za-z0-9]{4,8})"/;
-    let try1 = /fill:#([0-9A-Za-z]{1,8})/;
+    let try1 = /fill:\#([0-9A-Za-z]{1,8})/;
     var answer = '#nadabish';
     if ( try0.test( path ) ) {
         answer = path.match( try0 )[ 1 ];
@@ -198,6 +198,8 @@ export default function App( ) {
                         .replace( /</g , '\n\n<' );
         return newStrin;
     }
+
+    var colsNow = [ ];
     
     return (
 
@@ -221,10 +223,24 @@ export default function App( ) {
                                 border : '1px solid gray' ,
                                 borderRadius : '.5rem' } }
                                 >
-                                <Image width='300' 
-                                    src={ window.URL.createObjectURL( upload ) } 
-                                    alt='upload' 
-                                    /> 
+                                    <Row>
+                                        <Col style={ { 
+                                            textAlign : 'center' ,
+                                            fontSize : '1.8rem' ,
+                                            fontWeight : 600
+                                             } }>
+                                            Original
+                                        </Col>
+                                    </Row>
+
+                                    <Row>
+                                        <Col style={ { textAlign : 'center' } }>
+                                        <Image width='300' 
+                                            src={ window.URL.createObjectURL( upload ) } 
+                                            alt='upload' 
+                                            />
+                                        </Col>
+                                    </Row>
                             </Col>
                             }
                     </Row>
@@ -233,8 +249,14 @@ export default function App( ) {
 
             <Row>
                 <Col>
+              
                     <Row>
                         <Col>
+                        <Row>
+                        <Col>
+                        Composite
+                        </Col>
+                    </Row>
                             {
                             genPaths.length > 0 
                             ?
@@ -301,12 +323,13 @@ export default function App( ) {
                         </Col>
 
 
-                        <Col
+                        {/* <Col
                             className='bordered' 
                             key={ ind + 'poppedOwtBish' }
                             style={ genSvgsFixed 
                                 ? fixedStyle : { 
-                                    width : '300px' , 
+                                    width : '200px' , 
+                                    height : '150px' ,
                                     fontWeight : '500' , 
                                     color : 'red' }
                             } >
@@ -315,13 +338,25 @@ export default function App( ) {
                                 genSvgsFixed={ genSvgsFixed }
                                 setGenSvgsFixed={ setGenSvgsFixed }
                                 imgText={ genPaths[ ind ] } imgInd={ ind } />
-                        </Col>
+                        </Col> */}
 
 
                         
 
                         <Col>
                             <ColorPacker
+                                colors={ paths
+                                    .filter( f => { 
+                                        if ( 
+                                            typeof f.fill !=='undefined' && 
+                                            f.fill.length > 0 &&
+                                            !colsNow.includes( f.fill ) ) { 
+                                                colsNow.push( f.fill ); 
+                                                return true;
+                                            } else { 
+                                                return false;
+                                        };} )
+                                    .map( m => ( m.fill ) ) }
                                 color0={ c.fill }
                                 handleColorPick={ handleColorPick }
                                 indy={ ind }
