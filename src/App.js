@@ -10,11 +10,14 @@ import PloderBuns       from './components/plodybuns.jsx';
 import ColorPacker      from './components/colorpacker.jsx';
 import PlodingRear      from './components/plodingrear.jsx';
 // import { execute }      from 'wasm-imagemagick';
-
+// import { buildInputFile, execute, loadImageElement } from 'wasm-imagemagick';
+import * as Magick from 'wasm-imagemagick';
+import logo from './logo.svg';
+import image1 from './image1.png';
+import fn from './fn.png';
 // import axios            from 'axios';
 const plateBegin =      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.9 595.3">`;
 const plateEnding =     `</svg>`;
-
 
 
 
@@ -86,6 +89,47 @@ export default function App( ) {
         setUpload(      files[ 0 ] );
     };
 
+
+
+
+
+    // async function doImageMagick( ) {
+    //     const { outputFiles , exitCode } = await execute({
+    //         inputFiles: [ await buildInputFile( '/fn.png' , 'image1.png')],
+    //         commands: [
+    //         'convert image1.png -rotate 70 image2.gif',
+    //         // heads up: the next command uses 'image2.gif' which was the output of previous command:
+    //         // 'convert image2.gif -scale 23% image3.jpg',
+    //         ],
+    //     } )
+    //     if ( exitCode !== 0 )
+    //         await loadImageElement( outputFiles[ 0 ] , document.getElementById( 'outputImage' ) )
+
+    // }
+
+    // if ( upload ) {
+    //     doImageMagick( );
+    // }
+    let rotatedImage = document.getElementById('rotatedImage');
+
+
+    let DoMagickCall = async function () {
+        let fetchedSourceImage = await fetch("rotate.png");
+        let arrayBuffer = await fetchedSourceImage.arrayBuffer();
+        let sourceBytes = new Uint8Array(arrayBuffer);
+  
+        // calling image magick with one source image, and command to rotate & resize image
+        const files = [{ 'name': 'srcFile.png', 'content': sourceBytes }];
+        const command = ["convert", "srcFile.png", "-rotate", "90", "-resize", "200%", "out.png"];
+        let processedFiles = await Magick.Call(files, command);
+  
+        // response can be multiple files (example split)
+        // here we know we just have one
+        let firstOutputImage = processedFiles[0]
+        rotatedImage.src = URL.createObjectURL(firstOutputImage['blob'])
+        console.log("created image " + firstOutputImage['name'])
+      };
+      DoMagickCall();
 
 
 
@@ -230,12 +274,19 @@ export default function App( ) {
 
         <Container
             style={ { 
-                display : 'none' , 
                 minHeight : '100vh' , 
                 backgroundColor : !upload 
                     ? 'black' : 'white'
             } } >
             <Row style={ { zIndex : 9999 , position : 'fixed' , top : '0px' , height : '200px' } } >
+                <Col>
+                <img src={ logo } alt='alt pic' />
+                <img src={ fn } alt='alt pic' />
+                <img src={ image1 } alt='alt pic' />
+                <img src={ './image1.png' } alt='alty' />
+
+                </Col>
+
                 <Col>
 
                     <Row>
@@ -283,7 +334,13 @@ export default function App( ) {
                     </Row>
 
 
+<Row>
+    <Col>
+        <div id='outputImage' >
 
+        </div>
+    </Col>
+</Row>
 
 
 
