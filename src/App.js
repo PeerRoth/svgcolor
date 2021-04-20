@@ -23,14 +23,6 @@ const plateEnding =     `</svg>`;
 
 
 
-var initFixedStyle= { 
-    position : 'absolute' ,
-    top: '30' ,
-    right : '0' ,
-    width : '100px' ,
-    height : '50px'
-}
-
 
 
 function getStyleFromFull( svgCont ) {
@@ -68,8 +60,9 @@ function PoppedOutBitch( props ) {
     let blob = new Blob( [ imgText ] , { type : 'image/svg+xml' } );
     let urlSvgPath = URL.createObjectURL( blob );
     return <img key={ 'poptoutbish' + imgInd }
-                width='300' src={ urlSvgPath } 
-                alt={ imgInd + 'caca' } 
+                width='300' 
+                src={ urlSvgPath }
+                alt={ imgInd + 'caca' }
             />
 }
 
@@ -85,7 +78,7 @@ export default function App( ) {
     const [ style ,         setStyle ] =            useState( [ ] );
     const [ parsedStyle ,   setParsedStyle ] =      useState( [ ] )
     const [ pStyle ,        setPStyle ] =           useState( );
-    const [ fixedStyle ,    setFixedStyle ] =       useState( initFixedStyle );
+    // const [ fixedStyle ,    setFixedStyle ] =       useState( initFixedStyle );
     const [ svgString ,     setSvgString ] =        useState( '' );
 
     function storeUploadInBrowser( event ) {
@@ -94,7 +87,10 @@ export default function App( ) {
                         .map( a => ( event.target.files[ a ] ) );
         plode.append(   'file' ,     event.target.files[ 0 ] );
         setUpload(      files[ 0 ] );
-    }
+    };
+
+
+
 
     useEffect( ( ) => {
         async function onceUserUploads( ) {
@@ -121,19 +117,16 @@ export default function App( ) {
                                     .filter( f => ( /[0-9A-Za-z]/.test( f ) ) )
                                 : [ 'null' , 'null' , 'null' ];
             console.log( styles );
-
             let parsedStyles = styles.map( m => {
                 let psArray = m.split( '{' );
                 return { [ psArray[ 0 ] ] : psArray[ 1 ] } 
             } );
-
             var psObject = { };
             styles.forEach( p => {
                 let q = p.split( '{' );
                 psObject[ q[ 0 ] ] = q[ 1 ] ;
             } );
             console.log( psObject )
-            
             if ( parsedStyles.length > 0 ) {
                 pathMatches.forEach( ( p , q ) => {
                     if ( p.className !== '' ) {
@@ -147,8 +140,6 @@ export default function App( ) {
                     }
                 } )
             }
-
-
             // UPLOAD IS THE FILE OBJECT
             setSvgString( text );
             setStyle( styles );
@@ -163,6 +154,8 @@ export default function App( ) {
     } , [ upload ] );
 
 
+
+    const [ filteredColors , setFilteredColors ] = useState( [ ] );
     useEffect( ( ) => {
         var svgsFromPaths = paths.map( y => {
         return ( plateBegin + y.text.replace( 
@@ -170,8 +163,35 @@ export default function App( ) {
                 'path fill="' + y.fill + '" ' )
             + plateEnding ) } );
             setGenPaths( svgsFromPaths ); // ARRAY OF SVG STRINGS
+
+        
+                
+        const filterColors = paths
+            .filter( f => { 
+                if ( 
+                    typeof f.fill !=='undefined' && 
+                    f.fill.length > 0 &&
+                    !colsNow.includes( f.fill ) ) { 
+                        colsNow.push( f.fill ); 
+                        return true;
+                    } else { 
+                        return false;
+                };} )
+            .map( m => ( m.fill ) );
+        console.log( 'fills:::' )
+        console.log( filteredColors );
+        setFilteredColors( filterColors )
+
+
         } , [ paths ] );
 
+
+
+        function deleteOnePath( ind ) {
+            let tempPs = [ ...paths ];
+            tempPs.splice( ind , 1 );
+            setPaths( tempPs );
+        }
 
     function handleColorPick( oldInd , newCol ) {
         let tempPaths =             [ ...paths ];
@@ -187,106 +207,170 @@ export default function App( ) {
         setGenPaths( tempGenPaths );
     }
 
+
+
     function handleGenSvgClick( ) {
         console.log( genSvgsFixed );
         setGenSvgsFixed( !genSvgsFixed );
     }
     
     
+
+
     function format( strin , typ ) {
         let newStrin = strin
                         .replace( /</g , '\n\n<' );
         return newStrin;
     }
 
+
     var colsNow = [ ];
-    
+
+
+
+
     return (
 
         <Container
-            style={ { minHeight : '100vh' , backgroundColor : !upload ? 'black' : 'white' } } >
-            <Row>
+            style={ { 
+                minHeight : '100vh' , 
+                backgroundColor : !upload 
+                    ? 'black' : 'white'
+            } } >
+            <Row style={ { zIndex : 9999 , position : 'fixed' , top : '0px' , height : '200px' } } >
                 <Col>
+
                     <Row>
                         <Col>
-                            { !upload &&
-                            <PlodingRear 
-                                handleUpload={ storeUploadInBrowser } 
-                            /> }
-                        </Col>
-                    </Row>
-
-                    <Row>
-                            { 
-                            upload && 
-                            <Col style={ { 
-                                border : '1px solid gray' ,
-                                borderRadius : '.5rem' } }
-                                >
-                                    <Row>
-                                        <Col style={ { 
-                                            textAlign : 'center' ,
-                                            fontSize : '1.8rem' ,
-                                            fontWeight : 600
-                                             } }>
-                                            Original
-                                        </Col>
-                                    </Row>
-
-                                    <Row>
-                                        <Col style={ { textAlign : 'center' } }>
-                                        <Image width='300' 
-                                            src={ window.URL.createObjectURL( upload ) } 
-                                            alt='upload' 
-                                            />
-                                        </Col>
-                                    </Row>
-                            </Col>
+                            { !upload && 
+                            <PlodingRear  handleUpload={ storeUploadInBrowser } /> 
                             }
-                    </Row>
-                </Col>
-            </Row>
-
-            <Row>
-                <Col>
-              
-                    <Row>
-                        <Col>
-                        <Row>
-                        <Col>
-                        Composite
                         </Col>
                     </Row>
+
+
+                    <Row>
+                        { 
+                        upload && 
+                        <Col style={ { 
+                            backgroundColor : 'white' ,
+                            border : '1px solid gray' ,
+                            borderRadius : '.5rem' ,
+                            position : 'fixed'  ,
+                            top : '0px' ,
+                            left : '10px'
+                        } }
+                            >
+                            <Row>
+                                <Col style={ { 
+                                    backgroundColor : 'white' ,
+                                    textAlign : 'center' ,
+                                    fontSize : '1.8rem' ,
+                                    fontWeight : 600
+                                    } }>
+                                    Original
+                                </Col>
+                            </Row>
+
+                            <Row>
+                                <Col style={ { textAlign : 'left' } }>
+                                <Image width='300' 
+                                    src={ window.URL.createObjectURL( upload ) } 
+                                    alt='upload' 
+                                    />
+                                </Col>
+                            </Row>
+                        </Col>
+                        }
+                    </Row>
+
+
+
+
+
+                    {/* var initFixedStyle= { 
+    position : 'absolute' ,
+    top: '30' ,
+    right : '0' ,
+    // width : '100px' ,
+    // height : '50px'
+} */}
+                    <Row style={ { zIndex : 9999 , position : 'fixed' , top : '0px' , height : '200px' } } >
+                        { 
+                        upload && 
+                        <Col style={ { 
+                            // border : '1px solid gray' ,
+                            // borderRadius : '.5rem' ,
+                            position : 'fixed' ,
+                            // top : '10px' ,
+                            right : '0px' 
+                            } }
+                            >
+                            <Row>
+                                <Col style={ { 
+                                    textAlign : 'center' ,
+                                    fontSize : '1.8rem' ,
+                                    fontWeight : 600 ,
+                                    marginLeft : 'auto' ,
+                                    marginRight : 'auto' ,
+                                    width : '200px'
+                                    } }>
+                                    Composite
+                                </Col>
+                            </Row>
+
                             {
                             genPaths.length > 0 
                             ?
-                            <Row onClick={ handleGenSvgClick } >
+                            <Row 
+                                style={ { position : 'relative' } }
+                                onClick={ handleGenSvgClick }
+                                >
                                 { genPaths.map( ( gp , gpi ) => (
-                                    <Col
-                                        className='bordered' 
-                                        key={ gpi + 'poppedOwtBish' }
-                                        style={ genSvgsFixed 
-                                            ? fixedStyle : { 
-                                                width : '300px' , 
-                                                fontWeight : '500' , 
-                                                color : 'red' }
-                                        } >
-                                        { gpi }
-                                        <PoppedOutBitch
-                                            genSvgsFixed={ genSvgsFixed }
-                                            setGenSvgsFixed={ setGenSvgsFixed }
-                                            imgText={ gp } imgInd={ gpi } />
-                                    </Col>
+                                <Col
+                                    className='bordered' 
+                                    key={ gpi + 'poppedOwtBish' }
+                                    style={ 
+                                        // genSvgsFixed 
+                                        // ? fixedStyle :
+                                         {
+                                             position : 'fixed' ,
+                                             right : '5px' ,
+                                            //  top : '5px' ,
+                                            //  top : '-30px' ,
+                                            minHeight : '30px' ,
+                                            // width : '300px' , 
+                                            fontWeight : '500' , 
+                                            color : 'red' ,
+                                            textAlign : 'center' }
+                                    } >
+                                    { gpi }
+                                    <PoppedOutBitch
+                                        genSvgsFixed={ genSvgsFixed }
+                                        setGenSvgsFixed={ setGenSvgsFixed }
+                                        imgText={ gp } imgInd={ gpi } />
+                                </Col>
                                 ) ) }
-                            
                             </Row>
                             :
-                            <></>
+                            <Row></Row>
                             }
                         </Col>
+                        }
                     </Row>
 
+                </Col>
+            </Row>
 
+
+
+
+
+            <Row
+            // style={ { marginTop : '340px'  } }
+             >
+                <Col>
+             
 
                 {/* F I L L S Z */}
                 {/* F I L L S Z */}
@@ -323,40 +407,11 @@ export default function App( ) {
                         </Col>
 
 
-                        {/* <Col
-                            className='bordered' 
-                            key={ ind + 'poppedOwtBish' }
-                            style={ genSvgsFixed 
-                                ? fixedStyle : { 
-                                    width : '200px' , 
-                                    height : '150px' ,
-                                    fontWeight : '500' , 
-                                    color : 'red' }
-                            } >
-                            { ind }
-                            <PoppedOutBitch
-                                genSvgsFixed={ genSvgsFixed }
-                                setGenSvgsFixed={ setGenSvgsFixed }
-                                imgText={ genPaths[ ind ] } imgInd={ ind } />
-                        </Col> */}
-
-
                         
 
                         <Col>
                             <ColorPacker
-                                colors={ paths
-                                    .filter( f => { 
-                                        if ( 
-                                            typeof f.fill !=='undefined' && 
-                                            f.fill.length > 0 &&
-                                            !colsNow.includes( f.fill ) ) { 
-                                                colsNow.push( f.fill ); 
-                                                return true;
-                                            } else { 
-                                                return false;
-                                        };} )
-                                    .map( m => ( m.fill ) ) }
+                                colors={ filteredColors }
                                 color0={ c.fill }
                                 handleColorPick={ handleColorPick }
                                 indy={ ind }
@@ -367,6 +422,12 @@ export default function App( ) {
                 : 
                 <></>   
                 }
+
+
+
+
+
+
 
 
 
@@ -398,7 +459,7 @@ export default function App( ) {
                                             } }
                                             >
                                             <Button
-                                                // onClick={ ( ) => { deletePath( ind ) } }
+                                                onClick={ ( ) => { deleteOnePath( ind ) } }
                                                 >
                                                 { typeof path === 'string' 
                                                     ? path.slice( 0 , 80 ) 
@@ -417,6 +478,10 @@ export default function App( ) {
                         </Col>
                     </Row>
                 ) ) }
+
+
+
+
 
 
 
