@@ -7,16 +7,15 @@ let exitCode = 0
 function ChangeUrl(url, fileName)
 {
     let splitUrl = url.split('/')
-    splitUrl[splitUrl.length -1] = fileName
-    return splitUrl.join('/')
+    splitUrl[ splitUrl.length -1 ] = fileName
+    return splitUrl.join( '/' )
 }
 // const magickJsCurrentPath = 'https://knicknic.github.io/wasm-imagemagick/magick.js';
-function GetCurrentUrlDifferentFilename(fileName)
-{
-    return ChangeUrl(magickJsCurrentPath, fileName)
+function GetCurrentUrlDifferentFilename( fileName ) {
+    return ChangeUrl( magickJsCurrentPath , fileName )
 }
 
-if (typeof Module == 'undefined') {
+if ( typeof Module == 'undefined') {
   Module = {
     noInitialRun: true,
     moduleLoaded: false,

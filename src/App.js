@@ -9,10 +9,7 @@ import {
 import PloderBuns       from './components/plodybuns.jsx';
 import ColorPacker      from './components/colorpacker.jsx';
 import PlodingRear      from './components/plodingrear.jsx';
-import { execute }      from 'wasm-imagemagick';
-
-
-
+// import { execute }      from 'wasm-imagemagick';
 
 // import axios            from 'axios';
 const plateBegin =      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.9 595.3">`;
@@ -233,6 +230,7 @@ export default function App( ) {
 
         <Container
             style={ { 
+                display : 'none' , 
                 minHeight : '100vh' , 
                 backgroundColor : !upload 
                     ? 'black' : 'white'
@@ -288,13 +286,7 @@ export default function App( ) {
 
 
 
-                    {/* var initFixedStyle= { 
-    position : 'absolute' ,
-    top: '30' ,
-    right : '0' ,
-    // width : '100px' ,
-    // height : '50px'
-} */}
+
                     <Row style={ { zIndex : 9999 , position : 'fixed' , top : '0px' , height : '200px' } } >
                         { 
                         upload && 
