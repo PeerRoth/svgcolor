@@ -93,41 +93,37 @@ export default function App( ) {
 
 
 
-    // async function doImageMagick( ) {
-    //     const { outputFiles , exitCode } = await execute({
-    //         inputFiles: [ await buildInputFile( '/fn.png' , 'image1.png')],
-    //         commands: [
-    //         'convert image1.png -rotate 70 image2.gif',
-    //         // heads up: the next command uses 'image2.gif' which was the output of previous command:
-    //         // 'convert image2.gif -scale 23% image3.jpg',
-    //         ],
-    //     } )
-    //     if ( exitCode !== 0 )
-    //         await loadImageElement( outputFiles[ 0 ] , document.getElementById( 'outputImage' ) )
 
-    // }
-
-    // if ( upload ) {
-    //     doImageMagick( );
-    // }
-    let rotatedImage = document.getElementById('rotatedImage');
-
-
-    let DoMagickCall = async function () {
-        let fetchedSourceImage = await fetch("rotate.png");
-        let arrayBuffer = await fetchedSourceImage.arrayBuffer();
-        let sourceBytes = new Uint8Array(arrayBuffer);
+    
+    
+    let DoMagickCall = async function ( ) {
+        
+        let rotatedImage =          document.getElementById( 'rotatedImage' );
+        let fetchedSourceImage =    await fetch( "rotate.png" );
+        let arrayBuffer =           await fetchedSourceImage.arrayBuffer( );
+        let sourceBytes =           new Uint8Array( arrayBuffer );
   
         // calling image magick with one source image, and command to rotate & resize image
-        const files = [{ 'name': 'srcFile.png', 'content': sourceBytes }];
-        const command = ["convert", "srcFile.png", "-rotate", "90", "-resize", "200%", "out.png"];
-        let processedFiles = await Magick.Call(files, command);
+        const files = [ { 
+                'name'      :   'srcFile.png' ,
+                'content'   :   sourceBytes
+            } ];
+        const command = [
+            "convert" ,
+            "srcFile.png" ,
+            "-rotate" ,
+            "90" ,
+            "-resize" ,
+            "200%" ,
+            "out.png"
+        ];
+        let processedFiles = await Magick.Call( files , command );
   
         // response can be multiple files (example split)
         // here we know we just have one
-        let firstOutputImage = processedFiles[0]
-        rotatedImage.src = URL.createObjectURL(firstOutputImage['blob'])
-        console.log("created image " + firstOutputImage['name'])
+        let firstOutputImage =  processedFiles[ 0 ];
+        rotatedImage.src =      URL.createObjectURL( firstOutputImage[ 'blob' ] );
+        console.log( "created image " + firstOutputImage[ 'name' ] );
       };
       DoMagickCall();
 
@@ -265,6 +261,7 @@ export default function App( ) {
     }
 
 
+
     var colsNow = [ ];
 
 
@@ -274,25 +271,18 @@ export default function App( ) {
 
         <Container
             style={ { 
-                minHeight : '100vh' , 
-                backgroundColor : !upload 
-                    ? 'black' : 'white'
+                // minHeight : '100vh' , 
+                // backgroundColor : !upload 
+                //     ? 'black' : 'white'
             } } >
             <Row style={ { zIndex : 9999 , position : 'fixed' , top : '0px' , height : '200px' } } >
-                <Col>
-                <img src={ logo } alt='alt pic' />
-                <img src={ fn } alt='alt pic' />
-                <img src={ image1 } alt='alt pic' />
-                <img src={ './image1.png' } alt='alty' />
-
-                </Col>
-
+              
                 <Col>
 
                     <Row>
                         <Col>
                             { !upload && 
-                            <PlodingRear  handleUpload={ storeUploadInBrowser } /> 
+                                <PlodingRear  handleUpload={ storeUploadInBrowser } /> 
                             }
                         </Col>
                     </Row>
@@ -554,6 +544,27 @@ export default function App( ) {
                 </Row>
 
 
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 
                 {/* S V G  - - T E X T */}
                 {/* S V G  - - T E X T */}

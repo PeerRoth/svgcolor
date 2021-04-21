@@ -9,19 +9,19 @@ export default function PlodingRear(props) {
     <>
       <Row 
     //   className='landing' 
-      style={{ height: "70px" }}
+      style={ { height : "70px" } }
       >
           <span className='landing' >hi</span> <span className='landingtoo'>there</span>
         <Col>
           <label
-            id={"cloud"}
-            htmlFor={"nid"}
-            style={{
+            id={ "cloud" }
+            htmlFor={ "nid" }
+            style={ {
               marginLeft: "auto",
               marginRight: "auto",
               alignContents: "center",
               marginBottom: "10px",
-            }}
+            } }
           >
             <svg
               className="svgcloud"
