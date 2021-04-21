@@ -10,7 +10,7 @@ import { pmsColors } from './pmscolors.jsx';
 
 export default function ColorPacker( props ) {
 
-    const { indy , colors , color0 , handleColorPick } = props;
+    const { indy , colors , color0 , handleColorPick , selectedPath } = props;
 
     const [ colorLocal , setColorLocal ] = useState( color0 );
 
@@ -18,8 +18,11 @@ export default function ColorPacker( props ) {
     function handleChangeComplete( colr ) {
         console.log( colr );
         let clrHax = colr.hex.replace( '#' , '' );
+        console.log( clrHax )
+        console.log( selectedPath )
         setColorLocal( clrHax );
-        handleColorPick( indy , colr.hex );
+        handleColorPick( selectedPath , colr.hex );
+        // handleColorPick( indy , colr.hex );
     }
 
     var pcol = pmsColors.map( p => ( p[ 2 ] ) )
@@ -49,8 +52,6 @@ export default function ColorPacker( props ) {
                     colors={ arrayOfArrays }
                     onChangeComplete={ handleChangeComplete } 
                 />
-
-
 
 
 

@@ -88,6 +88,7 @@ export default function App( ) {
     const [ svgString ,     setSvgString ] =        useState( '' );
     const [ pathObjects ,     setPathObjects ] =        useState( [ ] );
     const [ bigOne ,     setBigOne ] =        useState( '' );
+    const [ selectedPath , setSelectedPath ] = useState( 0 )
 
     function storeUploadInBrowser( event ) {
         let plode =     new FormData( );
@@ -203,16 +204,21 @@ export default function App( ) {
 
 
 
+
     useEffect( ( ) => {
-        var svgsFromPaths = pathObjects.map( y => {
-        return ( plateBegin 
+        var svgsFromPaths = plateBegin 
+        + pathObjects.map( y => {
+        return (  
             + 
             // /fill/.test( y.text )
             //     ? 
-                y.text.replace( 
-                /path\s/ , 
-                'path fill="#' + y.fill + '" ' )
-            + plateEnding ) } );
+            + '<path ' 
+            // + y.text.replace( 
+                // /path\s/ , 
+                // 'path fill="#' + y.fill + '" ' )
+                + y.p
+                ) } )
+            + plateEnding
             setGenPaths( svgsFromPaths ); // ARRAY OF SVG STRINGS
 
         } , [ pathObjects ] );
@@ -225,17 +231,17 @@ export default function App( ) {
         setPaths( tempPs );
     }
 
+
     function handleColorPick( oldInd , newCol ) {
         let tempPaths =             [ ...pathObjects ];
-        tempPaths[ oldInd ].fill =  newCol;
-        setPaths( tempPaths );
-
+        let targetColor =           newCol[ 0 ] === '#' ? newCol.slice( 1 ) : newCol;
+        tempPaths[ oldInd ].fill =  targetColor;
+        setPathObjects( tempPaths );
         let tempGenPaths = [ ...genPaths ];
         tempGenPaths[ oldInd ] = tempGenPaths[ oldInd ]
-                                    .replace( 
-                                        new RegExp( tempPaths[ oldInd ].fill , 'g' ) ,
-                                        newCol
-                                     );
+                                .replace( 
+                                    new RegExp( tempPaths[ oldInd ].fill , 'g' ) ,
+                                    newCol );
         setGenPaths( tempGenPaths );
     }
 
@@ -256,30 +262,17 @@ export default function App( ) {
     }
 
 
+    function selectPath( inn ) {
+        console.log( 'SELECTED SVG PATH : ' + inn );
+        console.log( 'fill : ' + pathObjects[ inn ].fill );
+        setSelectedPath( inn );
+    }
 
 
-
-const [ selectedPath , setSelectedPath ] = useState( 0 )
-
-
-
-
-
-function selectPath( inn ) {
-    console.log( 'SELECTED SVG PATH : ' + inn );
-    console.log( 'fill : ' + pathObjects[ inn ].fill );
-    setSelectedPath( inn );
-}
 
     return (
-
         <Container>
-
-
-            
-            
-            
-            
+{/* 
             <Row style={ { 
                 zIndex : 9999 , 
                 position : 'fixed' , 
@@ -288,7 +281,7 @@ function selectPath( inn ) {
                 height : '200px' 
                 } } >
               
-                <Col>
+                <Col> */}
 
                     <Row>
                         <Col>
@@ -298,51 +291,8 @@ function selectPath( inn ) {
                         </Col>
                     </Row>
 
-
-                    {/* <Row>
-                        { 
-                        upload && 
-                        
-                        <Col style={ { 
-                                backgroundColor : 'white' ,
-                                border : '1px solid gray' ,
-                                borderRadius : '.5rem' ,
-                                position : 'fixed'  ,
-                                top : '2vh' ,
-                                left : '10px' ,
-                                width : '48vw'
-                            } }
-                            >
-
-                            <Row>
-                                <Col style={ { 
-                                    backgroundColor : 'white' ,
-                                    textAlign : 'center' ,
-                                    fontSize : '1.8rem' ,
-                                    fontWeight : 600 ,
-                                    fontFamily : 'Montserrat'
-                                    } }>
-                                    Original
-                                </Col>
-                            </Row>
-
-                            <Row>
-                                <Col style={ { textAlign : 'left' } }>
-                                <Image width='300' 
-                                    src={ window.URL.createObjectURL( upload ) } 
-                                    alt='upload' 
-                                    />
-                                </Col>
-                            </Row>
-                        </Col>
-                        }
-                    </Row> */}
-
-
-
-                    <Row style={ { zIndex : 9999 , position : 'fixed' , right : '0px' , top : '0px' , height : '200px' } } >
-                        { 
-                        upload && 
+                    {/* <Row style={ { zIndex : 9999 , position : 'fixed' , right : '0px' , top : '0px' , height : '200px' } } >
+                        {  upload && 
                         <Col style={ { 
                             backgroundColor : 'white' ,
                             border : '1px solid gray' ,
@@ -365,38 +315,8 @@ function selectPath( inn ) {
                                     Composite
                                 </Col>
                             </Row>
-
-
-                <Row>
-                    <Col 
-                        style={ { fontSize : '.25rem' , height : '300px' , width : '40vw' , position : 'fixed' , top : '300px' , right : '30vw' } }>
-                        <Image src={ URL.createObjectURL( new Blob( [ bigOne ] , { type : 'image/svg+xml' } ) ) } alt={ '99' } height={ 300 } />
-                        { bigOne.toString( ) }
-                    </Col>
-                </Row>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            {
-                            genPaths.length > 0 
-                            ?
-                            <Row 
+                            { genPaths.length > 0 
+                            ? <Row 
                                 // style={ { position : 'relative' } }
                                 onClick={ handleGenSvgClick }
                                 >
@@ -407,14 +327,9 @@ function selectPath( inn ) {
                                     style={ {
                                              position : 'fixed' ,
                                              right : '5px' ,
-                                             width : '48vw' ,
+                                             width : '28vw' ,
                                              textAlign : 'center' ,
                                              top : '2vh'
-
-                                            // minHeight : '30px' ,
-                                            // fontWeight : '500' , 
-                                            // color : 'red' ,
-                                            // textAlign : 'center' 
                                         } } >
                                     { gpi }
                                     <PoppedOutBitch
@@ -430,10 +345,8 @@ function selectPath( inn ) {
                             }
                         </Col>
                         }
-                    </Row>
-
-                </Col>
-            </Row>
+                    </Row> */}
+                {/* </Col> </Row> */}
 
 
 
@@ -441,84 +354,58 @@ function selectPath( inn ) {
 
 
 
+                <Row>
+                    <Col 
+                        style={ { fontSize : '.25rem' , height : '300px' , width : '55vw' , 
+                        position : 'fixed' , 
+                        // top : '350px' , 
+                        right : '0vw' } }>
+                        <Image src={ URL.createObjectURL( new Blob( [ bigOne ] , { type : 'image/svg+xml' } ) ) }
+                            alt={ '99' } height={ 300 } width='400'/>
+                        { bigOne.toString( ) }
+                    </Col>
+                </Row>
 
 
-
-
-
-
-
-            <Row
+                {/* <Row
                 style={ { 
-                    marginTop : '300px'
+                    // marginTop : '300px'
                 } } >
-
-                <PathPicker 
-                    paths={ pathObjects }
-                    genPaths={ genPaths }
-                    />
-            </Row>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                    <PathPicker 
+                        paths={ pathObjects }
+                        genPaths={ genPaths }
+                        />
+                </Row> */}
 
 
             <Row
-            // style={ { marginTop : '340px'  } }
-             >
+                >
                 <Col>
-             
-
-                {/* F I L L S Z */}
-                {/* F I L L S Z */}
-                {/* F I L L S Z */}
-                {
+                {/* {
                 pathObjects.length > 0
                 ?
-                pathObjects.map( ( c , ind ) => (
+                pathObjects.map( op => ( op.fill ) ).map( ( c , ind ) => (
                     <Row key={ ind + 'soobraw' }
                         style={ { 
                             paddingBottom : '2rem' , 
                             paddingLeft : '1rem' ,
-                            borderBottom : '1px solid gray' } } 
-                        >
+                            borderBottom : '1px solid gray' } } >
                         <Col style={ { 
                                 fontSize : '.8rem' , 
                                 marginBottom : '.9rem' ,
-                            } } 
-                            >
+                            } } >
                             <h3 style={ { 
                                 width : '240px' , 
                                 border : '2px solid gray' ,
                                 borderRadius : '.7rem' ,
                                 padding : '.6rem'
                                 } } >
-
                                 { '((' + ind + '))  ' }
-
-                                { typeof c[ 'fill' ] !== 'undefined' 
-                                    ? ' ' + c.fill 
+                                { typeof c !== 'undefined' 
+                                    ? ' ' + c 
                                     : 'fillzers' }
-
                             </h3>
                         </Col>
-
-
-                        
-
                         <Col>
                             <ColorPacker
                                 colors={ colors }
@@ -528,25 +415,30 @@ function selectPath( inn ) {
                                 />
                         </Col>
                     </Row>
-                ) )
-                : 
-                <></>   
-                }
+                ) ) :  <></> } */ }
+
+
+
+<ColorPacker colors={ pathObjects.map( f => ( '#' + f.fill ) ).reduce( 
+    ( unique , item ) =>
+        unique.includes( item ) ? unique : [ ...unique , item ] , [ ] ) }
+        handleColorPick={ handleColorPick }
+        selectedPath={ selectedPath }
+    // .map( furl => 
+    // <h3>{ furl }</h3>
+    // )
+// }
+/>
 
 
 
 
-
-
-
-
-
-                { pathObjects.length > 0 ? <>{
+                {/* { pathObjects.length > 0 ? <>{
                 [
                     [ style , 'Style' ] ,
                     [ colors , 'Colors From Path' ] ,
                     [ pathObjects , 'Paths' ] ,
-                    // [ pathObjects.map(p=>(p.fill)), 'Colors From Style' ]
+                    [ pathObjects.map(p=>(p.fill)), 'Colors From Style' ]
                 ].map( ( rodstewart , pod ) => (
                     <Row key={ pod + 'RowPath' } >
                         <Col>
@@ -566,8 +458,7 @@ function selectPath( inn ) {
                                             style={ { 
                                                 fontSize : '.8rem' , 
                                                 marginBottom : '.9rem'
-                                            } }
-                                            >
+                                            } } >
                                                 { '  ' + pod + ' - ' }{ ind + '  ' }
                                             <Button
                                                 style={ { textAlign : 'left' } }
@@ -579,17 +470,8 @@ function selectPath( inn ) {
                                                         + '  \n     **text : ' + path.text.slice( 0 , 80 )
                                                         + '  \n     **len : ' + path.len
                                                         + '  \n     **className : ' + path.className
-                                                    :
-                                                    path.slice( 0 , 80 )
-
-                                                    
+                                                    :  path.slice( 0 , 80 )
                                                     }
-                                                {/* { typeof path === 'string' 
-                                                    ? path.slice( 0 , 80 ) 
-                                                    : 'len: '
-                                                        + path.text.length 
-                                                        + '\n'+ path.text.slice( 0 , 80 )
-                                                } */}
                                             </Button>
                                         </Col>
                                     </Row>
@@ -600,7 +482,8 @@ function selectPath( inn ) {
                             <></> }
                         </Col>
                     </Row>
-                ) ) }</> : <></> }
+                ) ) }
+                </> : <></> } */}
 
 
 
@@ -608,9 +491,30 @@ function selectPath( inn ) {
 
 
 
+ {/* W I T H a TAGS */}
+ {/* W I T H a TAGS */}
+<svg style={ { 
+    position : 'fixed' , 
+    top : '500px' , 
+    right : '0px' , 
+    height : '300px' , 
+    width : '400px' 
+    } } >
 
-<svg style={ { position : 'fixed' , top : '400px' , left : '0px' } }>
-{ pathObjects.map( ( po , ro ) => ( <a id={ 's' + ro + 'svg' } key={ ro + 'svgkey' } style={ { transform : 'rotate(45)' , cursor : 'pointer' } } onClick={ ( ) => { selectPath( ro ) } } ><path fill={ '#' + po.fill } d={ po.d } /></a> ) ) }
+{ 
+pathObjects.map( ( po , ro ) => ( 
+
+    <a  id={ 's' + ro + 'svg' } 
+        key={ ro + 'svgkey' } 
+        style={ { cursor : 'pointer' } } 
+        onClick={ ( ) => { selectPath( ro ) } } 
+        >
+
+        <path fill={ '#' + po.fill } d={ po.d } />
+
+    </a> 
+    ) )
+}
 </svg>
 
 
@@ -620,16 +524,7 @@ function selectPath( inn ) {
 
 
 
-
-
-
-
-
-
-
-
-
-                <Row>
+                {/* <Row>
                     
                     { 
                     pathObjects.length > 0
@@ -639,28 +534,15 @@ function selectPath( inn ) {
                         <Col>
                         <Row><Col>{ p.fill }</Col></Row>
                         <Row><Col>{ p.className }</Col></Row>
-                        <Row><Col><pre className='coderBabe'>{ format( p.text.slice( 0,20 ) ) }</pre></Col></Row>
+                        <Row><Col>{ format( p.text.slice( 0,20 ) ) }</Col></Row>
                         </Col>
                         </Row>
                     ) )
                     : <></>
                     }
                     
-                </Row>
+                </Row> */}
 
-
-
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
 <br />
 <br />
 <br />
@@ -674,12 +556,12 @@ function selectPath( inn ) {
                 {/* S V G  - - T E X T */}
                 {/* S V G  - - T E X T */}
                 {/* S V G  - - T E X T */}
-                <Row>
+                <Row style={ { marginTop : '800px' } } >
                     <Col>
                         { svgString.length > 0 
                         ? <pre className='coderBabe'>
                             <code>
-                                { format( svgString , 'svg' ) }
+                                    { svgString }
                             </code>
                         </pre> : <></> }
                     </Col>
