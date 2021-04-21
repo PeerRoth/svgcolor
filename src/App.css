@@ -69,6 +69,7 @@
 
 .App {
     text-align: center;
+    font-family: 'Montserrat';
 }
 
 .App-logo {
@@ -100,36 +101,36 @@ input.visually-hidden:focus-within + label {
     }
     
 svg > a {
-    opacity:.9;
+    opacity:1;
 }
     #s0svg:hover {
-        opacity : 1;
+        opacity : .9;
     }
 
     #s1svg:hover {
-        opacity : 1;
+        opacity : .9;
     }
 
     #s2svg:hover {
-        opacity : 1;
+        opacity : .9;
     }
 
     #s3svg:hover {
-        opacity : 1;
+        opacity : .9;
     }
     
 #s4svg:hover {
-    opacity : 1;
+    opacity : .9;
 }
 
 
 #s5svg:hover {
-    opacity : 1;
+    opacity : .9;
 }
 
 
 #s6svg:hover {
-    opacity : 1;
+    opacity : .9;
 }
 
                 

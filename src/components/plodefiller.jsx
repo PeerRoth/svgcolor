@@ -2,17 +2,33 @@ import React, { useEffect } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
-export default function PlodingRear( props ) {
+export default function PlodeFiller( props ) {
 
   const { 
         handleUpload ,
-        filler
+        filler ,
+        setUpload
     } = props;
 
-// useEffect( ( ) => {
-//     let inp = document.getElementById( 'nid' );
-//     inp.files = { 0 : filler };
-// } , [ ] );
+useEffect( ( ) => {
+
+
+    var fd = new File( [ filler ] , 'filler.svg' );
+    // var fd = new FormData();
+setUpload( fd )
+// fd.append("files[]", new Blob([filler]), 'filler.svg');
+// fd.append("files[]", new Blob(['b']), 'b.txt');
+
+// for(let pair of fd.entries()) {
+//    console.log(pair[0], pair[1]); 
+// }
+
+// console.log( fd )
+
+//     let inp = document.getElementById( 'nip' );
+//     inp.files = fd;
+//     console.log( inp )
+} , [ ] );
 
   return (
     <>
@@ -24,7 +40,7 @@ export default function PlodingRear( props ) {
         <Col>
           <label
             id={ "cloud" }
-            htmlFor={ "nid" }
+            htmlFor={ "nip" }
             style={ {
               marginLeft: "auto",
               marginRight: "auto",
@@ -49,8 +65,8 @@ export default function PlodingRear( props ) {
       </Row>
 
       <input
-        name={"nid"}
-        id={"nid"}
+        name={"nip"}
+        id={"nip"}
         type="file"
         accept=".svg"
         className="visually-hidden"

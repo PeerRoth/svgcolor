@@ -1,4 +1,4 @@
-import React , { useState } from 'react'
+import React , { useState , useEffect } from 'react'
 import { 
     CirclePicker ,
     SwatchesPicker
@@ -10,9 +10,15 @@ import { pmsColors } from './pmscolors.jsx';
 
 export default function ColorPacker( props ) {
 
-    const { indy , colors , color0 , handleColorPick , selectedPath } = props;
+    const { colors , handleColorPick , selectedPath } = props;
 
-    const [ colorLocal , setColorLocal ] = useState( color0 );
+    console.log( colors , selectedPath );
+    console.log( colors[ selectedPath ] )
+    const [ colorLocal , setColorLocal ] = useState( colors[ selectedPath ] );
+
+    useEffect( ( ) => {
+        setColorLocal( colors[ selectedPath ] );
+    } , [ selectedPath ] );
 
 
     function handleChangeComplete( colr ) {

@@ -9,13 +9,14 @@ import {
 import PloderBuns       from './components/plodybuns.jsx';
 import ColorPacker      from './components/colorpacker.jsx';
 import PlodingRear      from './components/plodingrear.jsx';
-import PathPicker from './components/pathpicker.jsx'
+// import PlodeFiller from './components/plodefiller.jsx';
 // import { execute }      from 'wasm-imagemagick';
 // import { buildInputFile, execute, loadImageElement } from 'wasm-imagemagick';
 import * as Magick from 'wasm-imagemagick';
 import logo from './logo.svg';
 import image1 from './image1.png';
 import fn from './fn.png';
+import filler from './filler.svg'
 // import axios            from 'axios';
 const plateBegin =      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.9 595.3">`;
 const plateEnding =     `</svg>`;
@@ -88,7 +89,11 @@ export default function App( ) {
     const [ svgString ,     setSvgString ] =        useState( '' );
     const [ pathObjects ,     setPathObjects ] =        useState( [ ] );
     const [ bigOne ,     setBigOne ] =        useState( '' );
-    const [ selectedPath , setSelectedPath ] = useState( 0 )
+    const [ selectedPath , setSelectedPath ] = useState( 0 );
+    const [ currentColor , setCurrentColor ] = useState( '' );
+
+
+
 
     function storeUploadInBrowser( event ) {
         let plode =     new FormData( );
@@ -99,7 +104,7 @@ export default function App( ) {
     };
 
 
-
+  
 
     useEffect( ( ) => {
         async function onceUserUploads( ) {
@@ -173,7 +178,12 @@ export default function App( ) {
                                 } ) );
 
             var pathColors =    matchObjects
-                                .map( a => ( a.fill ) );
+                                .map( a => ( '#' + a.fill ) )
+                                .reduce( ( unique , item ) =>
+                                    unique.includes( item ) 
+                                        ? unique 
+                                        : [ ...unique , item ] , [ ] )
+                                // .sort( );
 
 
             console.log( styles );
@@ -209,13 +219,7 @@ export default function App( ) {
         var svgsFromPaths = plateBegin 
         + pathObjects.map( y => {
         return (  
-            + 
-            // /fill/.test( y.text )
-            //     ? 
-            + '<path ' 
-            // + y.text.replace( 
-                // /path\s/ , 
-                // 'path fill="#' + y.fill + '" ' )
+            '<path ' 
                 + y.p
                 ) } )
             + plateEnding
@@ -269,85 +273,18 @@ export default function App( ) {
     }
 
 
-
     return (
         <Container>
-{/* 
-            <Row style={ { 
-                zIndex : 9999 , 
-                position : 'fixed' , 
-                right : '0px' , 
-                top : '0px' , 
-                height : '200px' 
-                } } >
-              
-                <Col> */}
 
                     <Row>
                         <Col>
                             { !upload && 
-                                <PlodingRear  handleUpload={ storeUploadInBrowser } /> 
+                                <PlodingRear  
+                                    filler={ filler }
+                                    handleUpload={ storeUploadInBrowser } /> 
                             }
                         </Col>
                     </Row>
-
-                    {/* <Row style={ { zIndex : 9999 , position : 'fixed' , right : '0px' , top : '0px' , height : '200px' } } >
-                        {  upload && 
-                        <Col style={ { 
-                            backgroundColor : 'white' ,
-                            border : '1px solid gray' ,
-                            borderRadius : '.5rem' ,
-                            position : 'fixed' ,
-                            top : '2vh' ,
-                            right : '0px' ,
-                            width : '48vw'
-                            } }
-                            >
-                            <Row>
-                                <Col style={ { 
-                                    textAlign : 'center' ,
-                                    fontSize : '1.8rem' ,
-                                    fontWeight : 600 ,
-                                    marginLeft : 'auto' ,
-                                    marginRight : 'auto' ,
-                                    width : '200px'
-                                    } }>
-                                    Composite
-                                </Col>
-                            </Row>
-                            { genPaths.length > 0 
-                            ? <Row 
-                                // style={ { position : 'relative' } }
-                                onClick={ handleGenSvgClick }
-                                >
-                                { genPaths.map( ( gp , gpi ) => (
-                                <Col
-                                    className='bordered' 
-                                    key={ gpi + 'poppedOwtBish' }
-                                    style={ {
-                                             position : 'fixed' ,
-                                             right : '5px' ,
-                                             width : '28vw' ,
-                                             textAlign : 'center' ,
-                                             top : '2vh'
-                                        } } >
-                                    { gpi }
-                                    <PoppedOutBitch
-                                        style={ { textAlign : 'center' } }
-                                        genSvgsFixed={ genSvgsFixed }
-                                        setGenSvgsFixed={ setGenSvgsFixed }
-                                        imgText={ gp } imgInd={ gpi } />
-                                </Col>
-                                ) ) }
-                            </Row>
-                            :
-                            <Row></Row>
-                            }
-                        </Col>
-                        }
-                    </Row> */}
-                {/* </Col> </Row> */}
-
 
 
 
@@ -366,126 +303,21 @@ export default function App( ) {
                     </Col>
                 </Row>
 
-
-                {/* <Row
-                style={ { 
-                    // marginTop : '300px'
-                } } >
-                    <PathPicker 
-                        paths={ pathObjects }
-                        genPaths={ genPaths }
-                        />
-                </Row> */}
-
-
             <Row
                 >
                 <Col>
-                {/* {
-                pathObjects.length > 0
-                ?
-                pathObjects.map( op => ( op.fill ) ).map( ( c , ind ) => (
-                    <Row key={ ind + 'soobraw' }
-                        style={ { 
-                            paddingBottom : '2rem' , 
-                            paddingLeft : '1rem' ,
-                            borderBottom : '1px solid gray' } } >
-                        <Col style={ { 
-                                fontSize : '.8rem' , 
-                                marginBottom : '.9rem' ,
-                            } } >
-                            <h3 style={ { 
-                                width : '240px' , 
-                                border : '2px solid gray' ,
-                                borderRadius : '.7rem' ,
-                                padding : '.6rem'
-                                } } >
-                                { '((' + ind + '))  ' }
-                                { typeof c !== 'undefined' 
-                                    ? ' ' + c 
-                                    : 'fillzers' }
-                            </h3>
-                        </Col>
-                        <Col>
-                            <ColorPacker
-                                colors={ colors }
-                                color0={ c.fill }
-                                handleColorPick={ handleColorPick }
-                                indy={ ind }
-                                />
-                        </Col>
-                    </Row>
-                ) ) :  <></> } */ }
+               
 
 
-
-<ColorPacker colors={ pathObjects.map( f => ( '#' + f.fill ) ).reduce( 
-    ( unique , item ) =>
-        unique.includes( item ) ? unique : [ ...unique , item ] , [ ] ) }
+<ColorPacker 
+        // colors={ pathObjects.map( f => ( '#' + f.fill ) ).reduce( 
+        // ( unique , item ) =>
+        //     unique.includes( item ) ? unique : [ ...unique , item ] , [ ] )
+        //     .sort( ) }
+        colors={ colors }
         handleColorPick={ handleColorPick }
         selectedPath={ selectedPath }
-    // .map( furl => 
-    // <h3>{ furl }</h3>
-    // )
-// }
 />
-
-
-
-
-                {/* { pathObjects.length > 0 ? <>{
-                [
-                    [ style , 'Style' ] ,
-                    [ colors , 'Colors From Path' ] ,
-                    [ pathObjects , 'Paths' ] ,
-                    [ pathObjects.map(p=>(p.fill)), 'Colors From Style' ]
-                ].map( ( rodstewart , pod ) => (
-                    <Row key={ pod + 'RowPath' } >
-                        <Col>
-                            { rodstewart[ 0 ].length > 0
-                            ? 
-                            <Row className='justify-content-md-center'>
-                                <Col
-                                xs={ 10 }>
-                                    <Row>
-                                        <Col style={ { fontWeight : '600' } }>
-                                            { rodstewart[ 1 ] }
-                                        </Col>
-                                    </Row>
-                                    { rodstewart[ 0 ].map( ( path , ind ) => (
-                                    <Row key={ ind + 'soobraw' }>
-                                        <Col
-                                            style={ { 
-                                                fontSize : '.8rem' , 
-                                                marginBottom : '.9rem'
-                                            } } >
-                                                { '  ' + pod + ' - ' }{ ind + '  ' }
-                                            <Button
-                                                style={ { textAlign : 'left' } }
-                                                onClick={ ( ) => { deleteOnePath( ind ) } }
-                                                >
-                                                    { rodstewart[ 1 ] === 'Paths' 
-                                                    ? 
-                                                    '**fill : ' + path.fill 
-                                                        + '  \n     **text : ' + path.text.slice( 0 , 80 )
-                                                        + '  \n     **len : ' + path.len
-                                                        + '  \n     **className : ' + path.className
-                                                    :  path.slice( 0 , 80 )
-                                                    }
-                                            </Button>
-                                        </Col>
-                                    </Row>
-                                    ) ) }
-                                </Col>
-                            </Row>
-                            :
-                            <></> }
-                        </Col>
-                    </Row>
-                ) ) }
-                </> : <></> } */}
-
-
 
 
 
@@ -518,43 +350,12 @@ pathObjects.map( ( po , ro ) => (
 </svg>
 
 
-
-
-
-
-
-
-                {/* <Row>
-                    
-                    { 
-                    pathObjects.length > 0
-                    ? 
-                    pathObjects.map( ( p , i ) => ( <Row key={i+'rp'}>
-                        <Col xs={ 4 }>{ i }</Col>
-                        <Col>
-                        <Row><Col>{ p.fill }</Col></Row>
-                        <Row><Col>{ p.className }</Col></Row>
-                        <Row><Col>{ format( p.text.slice( 0,20 ) ) }</Col></Row>
-                        </Col>
-                        </Row>
-                    ) )
-                    : <></>
-                    }
-                    
-                </Row> */}
-
-<br />
-<br />
-<br />
-<br />
 <br />
 <br />
 <br />
 <br />
 <br />
 
-                {/* S V G  - - T E X T */}
-                {/* S V G  - - T E X T */}
                 {/* S V G  - - T E X T */}
                 <Row style={ { marginTop : '800px' } } >
                     <Col>
@@ -566,6 +367,28 @@ pathObjects.map( ( po , ro ) => (
                         </pre> : <></> }
                     </Col>
                 </Row>
+
+{/* <Row>
+    <Col>
+        <img id="filler" src={ filler } alt='initial svg' />
+    </Col>
+</Row> */}
+
+
+
+
+{/* 
+
+                    <Row>
+                        <Col>
+                            { !upload && 
+                                <PlodeFiller  
+                                setUpload={ setUpload }
+                                    filler={ filler }
+                                    handleUpload={ storeUploadInBrowser } /> 
+                            }
+                        </Col>
+                    </Row> */}
 
 
 
