@@ -9,6 +9,7 @@ import {
 import PloderBuns       from './components/plodybuns.jsx';
 import ColorPacker      from './components/colorpacker.jsx';
 import PlodingRear      from './components/plodingrear.jsx';
+import PathPicker from './components/pathpicker.jsx'
 // import { execute }      from 'wasm-imagemagick';
 // import { buildInputFile, execute, loadImageElement } from 'wasm-imagemagick';
 import * as Magick from 'wasm-imagemagick';
@@ -37,14 +38,17 @@ function getStyleFromFull( svgCont ) {
 };
 
 
-function getColorsFromPath( path ) {
-    let try0 = /fill="#([A-Za-z0-9]{4,8})"/;
-    let try1 = /fill:\#([0-9A-Za-z]{1,8})/;
-    var answer = '#nadabish';
+function getColorFromPath( path ) {
+    let try0 = /fill="#([A-Za-z0-9]{3,7})"/;
+    let try1 = /fill:#([0-9A-Za-z"]{3,8})"?\s?\/?/;
+    var answer = '';
+    console.log( path )
     if ( try0.test( path ) ) {
+        console.log( try0 )
         answer = path.match( try0 )[ 1 ];
         console.log( answer );
     } else if ( try1.test( path ) ) {
+        console.log( try1 )
         answer = path.match( try1 )[ 1 ];
         console.log( answer );
     } else {
@@ -55,12 +59,14 @@ function getColorsFromPath( path ) {
 
 
 
+
 function PoppedOutBitch( props ) {
     const { imgText , imgInd } = props;
     let blob = new Blob( [ imgText ] , { type : 'image/svg+xml' } );
     let urlSvgPath = URL.createObjectURL( blob );
     return <img key={ 'poptoutbish' + imgInd }
-                width='300' 
+                width='400'
+                height={ props.ht ? props.ht : '' }
                 src={ urlSvgPath }
                 alt={ imgInd + 'caca' }
             />
@@ -80,6 +86,8 @@ export default function App( ) {
     const [ pStyle ,        setPStyle ] =           useState( );
     // const [ fixedStyle ,    setFixedStyle ] =       useState( initFixedStyle );
     const [ svgString ,     setSvgString ] =        useState( '' );
+    const [ pathObjects ,     setPathObjects ] =        useState( [ ] );
+    const [ bigOne ,     setBigOne ] =        useState( '' );
 
     function storeUploadInBrowser( event ) {
         let plode =     new FormData( );
@@ -92,98 +100,101 @@ export default function App( ) {
 
 
 
-
-
-    
-    
-    let DoMagickCall = async function ( ) {
-        
-        let rotatedImage =          document.getElementById( 'rotatedImage' );
-        let fetchedSourceImage =    await fetch( "rotate.png" );
-        let arrayBuffer =           await fetchedSourceImage.arrayBuffer( );
-        let sourceBytes =           new Uint8Array( arrayBuffer );
-  
-        // calling image magick with one source image, and command to rotate & resize image
-        const files = [ { 
-                'name'      :   'srcFile.png' ,
-                'content'   :   sourceBytes
-            } ];
-        const command = [
-            "convert" ,
-            "srcFile.png" ,
-            "-rotate" ,
-            "90" ,
-            "-resize" ,
-            "200%" ,
-            "out.png"
-        ];
-        let processedFiles = await Magick.Call( files , command );
-  
-        // response can be multiple files (example split)
-        // here we know we just have one
-        let firstOutputImage =  processedFiles[ 0 ];
-        rotatedImage.src =      URL.createObjectURL( firstOutputImage[ 'blob' ] );
-        console.log( "created image " + firstOutputImage[ 'name' ] );
-      };
-      DoMagickCall();
-
-
-
     useEffect( ( ) => {
         async function onceUserUploads( ) {
             const text = await ( new Response( upload ) ).text( );
             console.log( text );
 
-            var pathMatches =   [ ...text.toString( ).matchAll( /(<path.+?>)/g ) ]
-                                    .map( a => ( { 
-                                        text : a[ 1 ] , 
-                                        className : /class=/.test( a[ 1 ] ) 
-                                            ? a[ 1 ].match( /class="(.+?)"/ )[ 1 ] 
-                                            : '' 
-                                        } ) )
-                                    .filter( f => ( 
-                                        /d="/.test( f.text ) 
-                                        && f.text.match( /d="(.+?)"/ )[ 1 ].length > 40 
-                                    ) );
-            
-            var pathColors =    pathMatches
-                                    .map( a => ( getColorsFromPath( a ) ) );
-
+            // make array of path strings
+            var pathMatches =   [ ...text.toString( ).matchAll( /(<path.+?>)/g ) ].map( m => ( m[ 1 ] ) );
+            console.log( pathMatches )
+            // make array of { [class] : fill }'s
             var styles =        getStyleFromFull( text )
-                                ? getStyleFromFull( text ).split( '.' )
+                                ? getStyleFromFull( text )
+                                    .split( '.' )
                                     .filter( f => ( /[0-9A-Za-z]/.test( f ) ) )
-                                : [ 'null' , 'null' , 'null' ];
+                                : [ ];
+
+            var matchObjects = pathMatches
+                                .map( a => ( { text : a } ) );
+
+                matchObjects = matchObjects
+                                .map( a => ( {
+                                    ...a ,
+                                    len : a.text.length
+                                } ) );
+
+                matchObjects = matchObjects
+                                .map( a => ( { 
+                                    ...a , 
+                                    className : /class=/.test( a.text ) 
+                                        ? a.text.match( /class="(.+?)"/ )[ 1 ] 
+                                        : '' } ) );
+
+                matchObjects = matchObjects
+                                .map( a => ( { 
+                                    ...a ,
+                                    fill : /fill/.test( a.text )
+                                        ? getColorFromPath( a.text )
+                                        .replace( /"/g , '' )
+                                        : /class=/.test( a.text )
+                                            ? styles
+                                            .filter( s => ( new RegExp( a.text.match( /class="(.+?)"/ )[ 1 ] , 'i' )
+                                            .test( s ) ) )[ 0 ]
+                                            .match( /#([A-Za-z0-9]{3,6})/ )[ 1 ]
+                                            .replace( /"/g , '' )
+                                            : 'fff'
+                                } ) );
+
+
+                matchObjects = matchObjects
+                                .map( a => ( { 
+                                    ...a ,
+                                    d : /d="/.test( a.text )
+                                        ? a.text.match( /d="(.+?)"/ )[ 1 ]
+                                        : ''
+                                } ) );
+
+                matchObjects = matchObjects
+                                .map( a => ( { 
+                                    ...a ,
+                                    rotation : /rotate\((.+?)\)"/.test( a.text )
+                                        ? a.text.match( /rotate\((.+?)\)"/ )[ 1 ]
+                                        : ''
+                                } ) );
+
+                matchObjects = matchObjects
+                                .map( a => ( { 
+                                    ...a ,
+                                    p : a.text
+                                    .replace( /style=".+?"/g , '' )
+                                    .replace( /class=".+?"/g , '' )
+                                } ) );
+
+            var pathColors =    matchObjects
+                                .map( a => ( a.fill ) );
+
+
             console.log( styles );
-            let parsedStyles = styles.map( m => {
-                let psArray = m.split( '{' );
-                return { [ psArray[ 0 ] ] : psArray[ 1 ] } 
-            } );
-            var psObject = { };
-            styles.forEach( p => {
-                let q = p.split( '{' );
-                psObject[ q[ 0 ] ] = q[ 1 ] ;
-            } );
-            console.log( psObject )
-            if ( parsedStyles.length > 0 ) {
-                pathMatches.forEach( ( p , q ) => {
-                    if ( p.className !== '' ) {
-                        let psq = typeof psObject[ p.className ] !== 'undefined' 
-                                    ? psObject[ p.className ].match( /fill:(.+?)\}/ )[ 1 ]
-                                    : '';
-                        console.log( p.className );
-                        console.log( psq );
-                        console.log( 'shaway' );
-                        pathMatches[ q ][ 'fill' ] = psq;
-                    }
-                } )
-            }
+
+            var oneBigOneP = '<svg xmlns="http://www.w3.org/2000/svg">\n\n' 
+                + matchObjects
+                    .map( mo => ( mo.p.replace( /<path\s/ig , '<path fill="#' + mo.fill + '" ' ) ) )
+                    .join( '\n\n' )
+                + '\n\n</svg>';
+
+            console.log( oneBigOneP );
+            setBigOne( oneBigOneP );
+            
+
             // UPLOAD IS THE FILE OBJECT
             setSvgString( text );
             setStyle( styles );
-            setPStyle( psObject );
-            setParsedStyle( parsedStyles )
+            // setPStyle( psObject );
+            // setParsedStyle( parsedStyles )
             setColors( pathColors ); // ARRAY OF COLORS IN ART
             setPaths( pathMatches ); // ARRAY OF ALL PATHS 
+            setPathObjects( matchObjects );
             console.log( pathMatches );        
         };
         if ( upload ) onceUserUploads( );
@@ -192,46 +203,30 @@ export default function App( ) {
 
 
 
-    const [ filteredColors , setFilteredColors ] = useState( [ ] );
     useEffect( ( ) => {
-        var svgsFromPaths = paths.map( y => {
-        return ( plateBegin + y.text.replace( 
+        var svgsFromPaths = pathObjects.map( y => {
+        return ( plateBegin 
+            + 
+            // /fill/.test( y.text )
+            //     ? 
+                y.text.replace( 
                 /path\s/ , 
-                'path fill="' + y.fill + '" ' )
+                'path fill="#' + y.fill + '" ' )
             + plateEnding ) } );
             setGenPaths( svgsFromPaths ); // ARRAY OF SVG STRINGS
 
-        
-                
-        const filterColors = paths
-            .filter( f => { 
-                if ( 
-                    typeof f.fill !=='undefined' && 
-                    f.fill.length > 0 &&
-                    !colsNow.includes( f.fill ) ) { 
-                        colsNow.push( f.fill ); 
-                        return true;
-                    } else { 
-                        return false;
-                };} )
-            .map( m => ( m.fill ) );
-        console.log( 'fills:::' )
-        console.log( filteredColors );
-        setFilteredColors( filterColors )
-
-
-        } , [ paths ] );
+        } , [ pathObjects ] );
 
 
 
-        function deleteOnePath( ind ) {
-            let tempPs = [ ...paths ];
-            tempPs.splice( ind , 1 );
-            setPaths( tempPs );
-        }
+    function deleteOnePath( ind ) {
+        let tempPs = [ ...pathObjects ];
+        tempPs.splice( ind , 1 );
+        setPaths( tempPs );
+    }
 
     function handleColorPick( oldInd , newCol ) {
-        let tempPaths =             [ ...paths ];
+        let tempPaths =             [ ...pathObjects ];
         tempPaths[ oldInd ].fill =  newCol;
         setPaths( tempPaths );
 
@@ -262,20 +257,36 @@ export default function App( ) {
 
 
 
-    var colsNow = [ ];
+
+
+const [ selectedPath , setSelectedPath ] = useState( 0 )
 
 
 
+
+
+function selectPath( inn ) {
+    console.log( 'SELECTED SVG PATH : ' + inn );
+    console.log( 'fill : ' + pathObjects[ inn ].fill );
+    setSelectedPath( inn );
+}
 
     return (
 
-        <Container
-            style={ { 
-                // minHeight : '100vh' , 
-                // backgroundColor : !upload 
-                //     ? 'black' : 'white'
-            } } >
-            <Row style={ { zIndex : 9999 , position : 'fixed' , top : '0px' , height : '200px' } } >
+        <Container>
+
+
+            
+            
+            
+            
+            <Row style={ { 
+                zIndex : 9999 , 
+                position : 'fixed' , 
+                right : '0px' , 
+                top : '0px' , 
+                height : '200px' 
+                } } >
               
                 <Col>
 
@@ -288,24 +299,28 @@ export default function App( ) {
                     </Row>
 
 
-                    <Row>
+                    {/* <Row>
                         { 
                         upload && 
+                        
                         <Col style={ { 
-                            backgroundColor : 'white' ,
-                            border : '1px solid gray' ,
-                            borderRadius : '.5rem' ,
-                            position : 'fixed'  ,
-                            top : '0px' ,
-                            left : '10px'
-                        } }
+                                backgroundColor : 'white' ,
+                                border : '1px solid gray' ,
+                                borderRadius : '.5rem' ,
+                                position : 'fixed'  ,
+                                top : '2vh' ,
+                                left : '10px' ,
+                                width : '48vw'
+                            } }
                             >
+
                             <Row>
                                 <Col style={ { 
                                     backgroundColor : 'white' ,
                                     textAlign : 'center' ,
                                     fontSize : '1.8rem' ,
-                                    fontWeight : 600
+                                    fontWeight : 600 ,
+                                    fontFamily : 'Montserrat'
                                     } }>
                                     Original
                                 </Col>
@@ -321,28 +336,21 @@ export default function App( ) {
                             </Row>
                         </Col>
                         }
-                    </Row>
-
-
-<Row>
-    <Col>
-        <div id='outputImage' >
-
-        </div>
-    </Col>
-</Row>
+                    </Row> */}
 
 
 
-                    <Row style={ { zIndex : 9999 , position : 'fixed' , top : '0px' , height : '200px' } } >
+                    <Row style={ { zIndex : 9999 , position : 'fixed' , right : '0px' , top : '0px' , height : '200px' } } >
                         { 
                         upload && 
                         <Col style={ { 
-                            // border : '1px solid gray' ,
-                            // borderRadius : '.5rem' ,
+                            backgroundColor : 'white' ,
+                            border : '1px solid gray' ,
+                            borderRadius : '.5rem' ,
                             position : 'fixed' ,
-                            // top : '10px' ,
-                            right : '0px' 
+                            top : '2vh' ,
+                            right : '0px' ,
+                            width : '48vw'
                             } }
                             >
                             <Row>
@@ -358,33 +366,59 @@ export default function App( ) {
                                 </Col>
                             </Row>
 
+
+                <Row>
+                    <Col 
+                        style={ { fontSize : '.25rem' , height : '300px' , width : '40vw' , position : 'fixed' , top : '300px' , right : '30vw' } }>
+                        <Image src={ URL.createObjectURL( new Blob( [ bigOne ] , { type : 'image/svg+xml' } ) ) } alt={ '99' } height={ 300 } />
+                        { bigOne.toString( ) }
+                    </Col>
+                </Row>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                             {
                             genPaths.length > 0 
                             ?
                             <Row 
-                                style={ { position : 'relative' } }
+                                // style={ { position : 'relative' } }
                                 onClick={ handleGenSvgClick }
                                 >
                                 { genPaths.map( ( gp , gpi ) => (
                                 <Col
                                     className='bordered' 
                                     key={ gpi + 'poppedOwtBish' }
-                                    style={ 
-                                        // genSvgsFixed 
-                                        // ? fixedStyle :
-                                         {
+                                    style={ {
                                              position : 'fixed' ,
                                              right : '5px' ,
-                                            //  top : '5px' ,
-                                            //  top : '-30px' ,
-                                            minHeight : '30px' ,
-                                            // width : '300px' , 
-                                            fontWeight : '500' , 
-                                            color : 'red' ,
-                                            textAlign : 'center' }
-                                    } >
+                                             width : '48vw' ,
+                                             textAlign : 'center' ,
+                                             top : '2vh'
+
+                                            // minHeight : '30px' ,
+                                            // fontWeight : '500' , 
+                                            // color : 'red' ,
+                                            // textAlign : 'center' 
+                                        } } >
                                     { gpi }
                                     <PoppedOutBitch
+                                        style={ { textAlign : 'center' } }
                                         genSvgsFixed={ genSvgsFixed }
                                         setGenSvgsFixed={ setGenSvgsFixed }
                                         imgText={ gp } imgInd={ gpi } />
@@ -405,6 +439,43 @@ export default function App( ) {
 
 
 
+
+
+
+
+
+
+
+
+
+            <Row
+                style={ { 
+                    marginTop : '300px'
+                } } >
+
+                <PathPicker 
+                    paths={ pathObjects }
+                    genPaths={ genPaths }
+                    />
+            </Row>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             <Row
             // style={ { marginTop : '340px'  } }
              >
@@ -415,9 +486,9 @@ export default function App( ) {
                 {/* F I L L S Z */}
                 {/* F I L L S Z */}
                 {
-                paths.length > 0
+                pathObjects.length > 0
                 ?
-                paths.map( ( c , ind ) => (
+                pathObjects.map( ( c , ind ) => (
                     <Row key={ ind + 'soobraw' }
                         style={ { 
                             paddingBottom : '2rem' , 
@@ -450,7 +521,7 @@ export default function App( ) {
 
                         <Col>
                             <ColorPacker
-                                colors={ filteredColors }
+                                colors={ colors }
                                 color0={ c.fill }
                                 handleColorPick={ handleColorPick }
                                 indy={ ind }
@@ -470,12 +541,12 @@ export default function App( ) {
 
 
 
-                {
+                { pathObjects.length > 0 ? <>{
                 [
                     [ style , 'Style' ] ,
                     [ colors , 'Colors From Path' ] ,
-                    [ paths , 'Paths' ] ,
-                    // [ paths.map(p=>(p.fill)), 'Colors From Style' ]
+                    [ pathObjects , 'Paths' ] ,
+                    // [ pathObjects.map(p=>(p.fill)), 'Colors From Style' ]
                 ].map( ( rodstewart , pod ) => (
                     <Row key={ pod + 'RowPath' } >
                         <Col>
@@ -497,15 +568,28 @@ export default function App( ) {
                                                 marginBottom : '.9rem'
                                             } }
                                             >
+                                                { '  ' + pod + ' - ' }{ ind + '  ' }
                                             <Button
+                                                style={ { textAlign : 'left' } }
                                                 onClick={ ( ) => { deleteOnePath( ind ) } }
                                                 >
-                                                { typeof path === 'string' 
+                                                    { rodstewart[ 1 ] === 'Paths' 
+                                                    ? 
+                                                    '**fill : ' + path.fill 
+                                                        + '  \n     **text : ' + path.text.slice( 0 , 80 )
+                                                        + '  \n     **len : ' + path.len
+                                                        + '  \n     **className : ' + path.className
+                                                    :
+                                                    path.slice( 0 , 80 )
+
+                                                    
+                                                    }
+                                                {/* { typeof path === 'string' 
                                                     ? path.slice( 0 , 80 ) 
                                                     : 'len: '
                                                         + path.text.length 
                                                         + '\n'+ path.text.slice( 0 , 80 )
-                                                }
+                                                } */}
                                             </Button>
                                         </Col>
                                     </Row>
@@ -516,7 +600,28 @@ export default function App( ) {
                             <></> }
                         </Col>
                     </Row>
-                ) ) }
+                ) ) }</> : <></> }
+
+
+
+
+
+
+
+
+<svg style={ { position : 'fixed' , top : '400px' , left : '0px' } }>
+{ pathObjects.map( ( po , ro ) => ( <a id={ 's' + ro + 'svg' } key={ ro + 'svgkey' } style={ { transform : 'rotate(45)' , cursor : 'pointer' } } onClick={ ( ) => { selectPath( ro ) } } ><path fill={ '#' + po.fill } d={ po.d } /></a> ) ) }
+</svg>
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -527,9 +632,9 @@ export default function App( ) {
                 <Row>
                     
                     { 
-                    paths.length > 0
+                    pathObjects.length > 0
                     ? 
-                    paths.map( ( p , i ) => ( <Row key={i+'rp'}>
+                    pathObjects.map( ( p , i ) => ( <Row key={i+'rp'}>
                         <Col xs={ 4 }>{ i }</Col>
                         <Col>
                         <Row><Col>{ p.fill }</Col></Row>

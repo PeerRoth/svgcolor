@@ -99,8 +99,53 @@ input.visually-hidden:focus-within + label {
     outline: thin dotted;
     }
     
+svg > a {
+    opacity:.9;
+}
+    #s0svg:hover {
+        opacity : 1;
+    }
+
+    #s1svg:hover {
+        opacity : 1;
+    }
+
+    #s2svg:hover {
+        opacity : 1;
+    }
+
+    #s3svg:hover {
+        opacity : 1;
+    }
+    
+#s4svg:hover {
+    opacity : 1;
+}
 
 
+#s5svg:hover {
+    opacity : 1;
+}
+
+
+#s6svg:hover {
+    opacity : 1;
+}
+
+                
+#co0:hover {
+    transform : scale(1.2);
+}
+
+
+
+#co00:hover {
+    background-color:  transparent;
+    width  : 120%!important;
+    height : 120%!important;
+    box-shadow : 'rgb(0, 22, 137) 0px 0px 0px 13px inset' ,
+
+}
 
 .out {
     display: block;

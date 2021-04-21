@@ -25,9 +25,8 @@ export default function ColorPacker( props ) {
     var pcol = pmsColors.map( p => ( p[ 2 ] ) )
     var pcor = pcol.slice( 0 , 200 );
     var arrayOfArrays = [ ];
-
     [ ...'abcdefghijklmnopqrstuv' ].map( ( a , b ) => {
-        console.log( b , ' ' , a );
+        // console.log( b , ' ' , a );
         let start = b * 6;
         let end = ( b * 6 ) + 6;
         arrayOfArrays.push( pcor.slice( start , end ) );
