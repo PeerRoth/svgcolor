@@ -90,7 +90,7 @@ export default function App( ) {
     const [ pathObjects ,     setPathObjects ] =        useState( [ ] );
     const [ bigOne ,     setBigOne ] =        useState( '' );
     const [ selectedPath , setSelectedPath ] = useState( 0 );
-    const [ currentColor , setCurrentColor ] = useState( '' );
+    const [ currentColorIndex , setCurrentColorIndex ] = useState( 0 );
 
 
 
@@ -177,13 +177,18 @@ export default function App( ) {
                                     .replace( /class=".+?"/g , '' )
                                 } ) );
 
+                matchObjects = matchObjects
+                                .map( ( a , b ) => ( { 
+                                    ...a ,
+                                    index : b } ) );
+
             var pathColors =    matchObjects
                                 .map( a => ( '#' + a.fill ) )
                                 .reduce( ( unique , item ) =>
                                     unique.includes( item ) 
                                         ? unique 
                                         : [ ...unique , item ] , [ ] )
-                                // .sort( );
+                                .sort( ( c , d ) => ( c.index > d.index ? 1 : c.index === d.index ? 0 : -1 ) );
 
 
             console.log( styles );
@@ -270,130 +275,115 @@ export default function App( ) {
         console.log( 'SELECTED SVG PATH : ' + inn );
         console.log( 'fill : ' + pathObjects[ inn ].fill );
         setSelectedPath( inn );
+        let croler = new RegExp( pathObjects[ inn ].fill );
+        var cindy = 0;
+        for ( var c = 0; c < colors.length; c ++ ) {
+            if ( croler.test( colors[ c ] ) )  {
+                cindy = c;
+                break;
+            } 
+        };
+        setCurrentColorIndex( cindy );
+    };
+
+    function setColorFromBelow( no ) {
+        let croler = new RegExp( no.replace( '#' , '' ) );
+        var cindy = 0;
+        for ( var c = 0; c < colors.length; c ++ ) {
+            if ( croler.test( colors[ c ] ) )  {
+                cindy = c;
+                break;
+            } 
+        };
+        console.log( cindy )
+        setCurrentColorIndex( cindy )
     }
 
 
     return (
         <Container>
 
-                    <Row>
-                        <Col>
-                            { !upload && 
-                                <PlodingRear  
-                                    filler={ filler }
-                                    handleUpload={ storeUploadInBrowser } /> 
-                            }
-                        </Col>
-                    </Row>
-
-
-
-
-
-
-                <Row>
-                    <Col 
-                        style={ { fontSize : '.25rem' , height : '300px' , width : '55vw' , 
-                        position : 'fixed' , 
-                        // top : '350px' , 
-                        right : '0vw' } }>
-                        <Image src={ URL.createObjectURL( new Blob( [ bigOne ] , { type : 'image/svg+xml' } ) ) }
-                            alt={ '99' } height={ 300 } width='400'/>
-                        { bigOne.toString( ) }
-                    </Col>
-                </Row>
-
-            <Row
-                >
+            <Row>
                 <Col>
-               
-
-
-<ColorPacker 
-        // colors={ pathObjects.map( f => ( '#' + f.fill ) ).reduce( 
-        // ( unique , item ) =>
-        //     unique.includes( item ) ? unique : [ ...unique , item ] , [ ] )
-        //     .sort( ) }
-        colors={ colors }
-        handleColorPick={ handleColorPick }
-        selectedPath={ selectedPath }
-/>
-
-
-
-
-
- {/* W I T H a TAGS */}
- {/* W I T H a TAGS */}
-<svg style={ { 
-    position : 'fixed' , 
-    top : '500px' , 
-    right : '0px' , 
-    height : '300px' , 
-    width : '400px' 
-    } } >
-
-{ 
-pathObjects.map( ( po , ro ) => ( 
-
-    <a  id={ 's' + ro + 'svg' } 
-        key={ ro + 'svgkey' } 
-        style={ { cursor : 'pointer' } } 
-        onClick={ ( ) => { selectPath( ro ) } } 
-        >
-
-        <path fill={ '#' + po.fill } d={ po.d } />
-
-    </a> 
-    ) )
-}
-</svg>
-
-
-<br />
-<br />
-<br />
-<br />
-<br />
-
-                {/* S V G  - - T E X T */}
-                <Row style={ { marginTop : '800px' } } >
-                    <Col>
-                        { svgString.length > 0 
-                        ? <pre className='coderBabe'>
-                            <code>
-                                    { svgString }
-                            </code>
-                        </pre> : <></> }
-                    </Col>
-                </Row>
-
-{/* <Row>
-    <Col>
-        <img id="filler" src={ filler } alt='initial svg' />
-    </Col>
-</Row> */}
-
-
-
-
-{/* 
-
-                    <Row>
-                        <Col>
-                            { !upload && 
-                                <PlodeFiller  
-                                setUpload={ setUpload }
-                                    filler={ filler }
-                                    handleUpload={ storeUploadInBrowser } /> 
-                            }
-                        </Col>
-                    </Row> */}
-
-
-
+                    { !upload && 
+                    <PlodingRear  
+                        filler={ filler }
+                        handleUpload={ storeUploadInBrowser }
+                    /> 
+                    }
                 </Col>
             </Row>
+
+
+
+            <Row>
+                <Col 
+                    style={ { 
+                        fontSize : '.25rem' , 
+                        height : '300px' , 
+                        width : '55vw' , 
+                        position : 'fixed' , 
+                        left : '0vw' ,
+                        top : '500px' } }>
+                    <Image src={ URL.createObjectURL( new Blob( [ bigOne ] , { type : 'image/svg+xml' } ) ) }
+                        alt={ '99' } height={ 300 } width='400'/>
+                    { bigOne.toString( ) }
+                </Col>
+            </Row>
+
+
+
+            <Row >
+                <Col>
+                    { upload &&
+                    <ColorPacker 
+                    currentColorIndex={ currentColorIndex }
+                        colors={ colors }
+                        handleColorPick={ handleColorPick }
+                        selectedPath={ selectedPath }
+                        setColorFromBelow={ setColorFromBelow }
+                    />
+                    }
+                    { upload &&
+                    <svg style={ { 
+                        position : 'fixed' , 
+                        top : '0px' , 
+                        right : '0px' , 
+                        height : '300px' , 
+                        width : '350px' 
+                    } } >
+                        { 
+                        pathObjects.map( ( po , ro ) => ( 
+                        <a  id={ 's' + ro + 'svg' } 
+                            key={ ro + 'svgkey' } 
+                            style={ { cursor : 'pointer' } } 
+                            onClick={ ( ) => { selectPath( ro ) } } 
+                            >
+                            <path fill={ '#' + po.fill } d={ po.d } />
+                        </a> 
+                        ) )
+                        }
+                    </svg>
+                    }
+                </Col>
+            </Row>
+
+
+
+            {/* S V G  - - T E X T */}
+            <Row style={ { marginTop : '1200px' } } >
+                <Col>
+                    { svgString.length > 0 
+                    ? <pre className='coderBabe'>
+                        <code>
+                                { svgString }
+                        </code>
+                    </pre> : <></> }
+                </Col>
+            </Row>
+
+
+
         </Container>
     );
 }

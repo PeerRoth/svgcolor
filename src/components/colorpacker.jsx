@@ -10,15 +10,18 @@ import { pmsColors } from './pmscolors.jsx';
 
 export default function ColorPacker( props ) {
 
-    const { colors , handleColorPick , selectedPath } = props;
+    const { colors , handleColorPick , 
+        selectedPath , setCurrentColorIndex , 
+        setColorFromBelow ,
+        currentColorIndex } = props;
 
     console.log( colors , selectedPath );
     console.log( colors[ selectedPath ] )
-    const [ colorLocal , setColorLocal ] = useState( colors[ selectedPath ] );
+    // const [ colorLocal , setColorLocal ] = useState( colors[ selectedPath ] );
 
-    useEffect( ( ) => {
-        setColorLocal( colors[ selectedPath ] );
-    } , [ selectedPath ] );
+    // useEffect( ( ) => {
+    //     setColorLocal( colors[ selectedPath ] );
+    // } , [ selectedPath ] );
 
 
     function handleChangeComplete( colr ) {
@@ -26,8 +29,10 @@ export default function ColorPacker( props ) {
         let clrHax = colr.hex.replace( '#' , '' );
         console.log( clrHax )
         console.log( selectedPath )
-        setColorLocal( clrHax );
+        // setColorLocal( clrHax );
         handleColorPick( selectedPath , colr.hex );
+        setColorFromBelow( clrHax )
+        // setCurrentColorIndex( )
         // handleColorPick( indy , colr.hex );
     }
 
@@ -49,7 +54,8 @@ export default function ColorPacker( props ) {
                 <CirclePicker 
                     colors={ colors }
                     onChangeComplete={ handleChangeComplete }
-                    color={ colorLocal } 
+                    color={ colors[ currentColorIndex ] } 
+                    // color={ colorLocal } 
                     />
                 <h5>
                 SwatchesPicker

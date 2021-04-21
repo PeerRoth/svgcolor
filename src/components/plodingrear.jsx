@@ -6,7 +6,7 @@ export default function PlodingRear( props ) {
 
   const { 
         handleUpload ,
-        filler
+        // filler
     } = props;
 
 // useEffect( ( ) => {
