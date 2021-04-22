@@ -1,18 +1,12 @@
-import React, { useEffect } from "react";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import React    from "react";
+import Row      from "react-bootstrap/Row";
+import Col      from "react-bootstrap/Col";
 
 export default function PlodingRear( props ) {
 
   const { 
         handleUpload ,
-        // filler
     } = props;
-
-// useEffect( ( ) => {
-//     let inp = document.getElementById( 'nid' );
-//     inp.files = { 0 : filler };
-// } , [ ] );
 
   return (
     <>
@@ -54,7 +48,7 @@ export default function PlodingRear( props ) {
         type="file"
         accept=".svg"
         className="visually-hidden"
-        onChange={handleUpload}
+        onChange={ handleUpload }
       />
     </>
   );

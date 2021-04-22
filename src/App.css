@@ -104,33 +104,33 @@ svg > a {
     opacity:1;
 }
     #s0svg:hover {
-        opacity : .9;
+        opacity : .7;
     }
 
     #s1svg:hover {
-        opacity : .9;
+        opacity : .7;
     }
 
     #s2svg:hover {
-        opacity : .9;
+        opacity : .7;
     }
 
     #s3svg:hover {
-        opacity : .9;
+        opacity : .7;
     }
     
 #s4svg:hover {
-    opacity : .9;
+    opacity : .7;
 }
 
 
 #s5svg:hover {
-    opacity : .9;
+    opacity : .7;
 }
 
 
 #s6svg:hover {
-    opacity : .9;
+    opacity : .7;
 }
 
                 
@@ -204,7 +204,8 @@ svg > a {
 }
 
 .svgcloud:hover {
-    cursor: url("./circ.svg"), auto;
+    cursor: pointer;
+    /* cursor: url("./circ.svg"), auto; */
     filter: blur( .5px );
     height : 60vh;
     fill: #5310fe!important;
